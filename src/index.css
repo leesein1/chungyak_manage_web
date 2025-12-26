@@ -1,0 +1,14 @@
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #f4f5fa;
+  color: #1f2937;
+}
+
+a { text-decoration: none; }
+
+/* Bootstrap 4 + React 19에선 일부 focus 스타일이 너무 강할 수 있어서 완화 */
+:focus { outline: none; }
