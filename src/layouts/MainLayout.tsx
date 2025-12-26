@@ -19,7 +19,7 @@ export default function AppLayout() {
 
         <div className="sidebar-footer">
           <div className="small" style={{ color: "rgba(203,213,225,.7)" }}>
-            UI only · API는 다음 단계
+            UI only · API는 추후 진행
           </div>
         </div>
       </aside>
