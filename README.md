@@ -1,73 +1,161 @@
-# React + TypeScript + Vite
+# 🏡 청약알리미 (ChungyakManager)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> **바쁜 하루 속에서도, 중요한 청약 정보만큼은 놓치고 싶지 않았다.**  
+> 예비신혼부부로서, 그리고 미래의 집을 책임지는 사람으로서 만든  
+> _완전 개인용 프로젝트_.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 💛 왜 만들었을까?
 
-## React Compiler
+나는 여자친구와 결혼을 준비하는 중이고,  
+서로 역할을 나누어 **결혼식 준비는 여자친구**,  
+**집(청약·임대 관련 준비)은 내가 맡기로 했다.**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+그러나 현실에서는…
 
-## Expanding the ESLint configuration
+- 행복주택 / 예비신혼부부 / 공공임대 공고를  
+  **매일 마이홈에 들어가서 직접 확인해야 했고**
+- 공고가 바뀌었는지 매번 클릭해서 비교해야 했으며
+- 마감일, 발표일, 계약일을 따로 기록해두지 않으면 잊기 쉬웠고
+- 일정이 변경되면 다시 처음부터 확인해야 했고
+- 업무도 바쁜데 이 과정을 매일 반복하는 건 너무 피곤했다
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+솔직히 말해서 **지치고 번거로웠다.**
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+그러다 문득 이런 생각이 들었다.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+> **“그냥 내가 자동으로 확인해주는 프로그램을 만들면 안 되나?”**  
+> **“내가 일할 때도, 쉬고 있을 때도 알아서 돌아가면 얼마나 편할까?”**
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+그 생각이 바로 **청약알리미의 시작**이다.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+이 앱은 누군가를 위한 SaaS도 아니고,  
+상업적인 목적도 없으며,  
+정말 **우리 둘의 미래 집을 찾기 위해 만든 도구**다.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🎯 이 앱이 해결하는 문제
+
+- 매일 마이홈 사이트를 찾아보는 시간 낭비
+- 신규 공고를 놓칠 위험
+- 일정 변경(마감일·발표일·계약일)을 못 알아챌 위험
+- 결혼 준비 + 업무 + 청약 관리라는 과부하
+- 기록을 따로 해두지 않으면 관리가 어려운 불편함
+
+즉,  
+**사람이 직접 해야 했던 반복 작업을 자동화해서  
+스트레스를 줄이는 것**이 이 앱의 목표다.
+
+---
+
+## 🔧 주요 기능
+
+## 🔧 주요 기능 (프론트엔드 현황)
+
+### ✔ 현재 구현 (UI 샘플)
+
+- 대시보드: KPI 카드, 달력(샘플 이벤트 표시), 마감 임박 목록
+- 조회(Search): 키워드/상태/D-day 필터, 목록 → 우측 상세 패널 (mock 데이터)
+- 설정(Settings): Slack Webhook 입력 UI, 알림 조건 토글, 동기화 주기 UI
+- 로그인: 샘플 로그인 화면
+
+### 🔜 예정(백엔드 연동 및 자동화)
+
+- 자동 모집공고 수집(백엔드)
+- 신규/변경 공고 자동 감지 및 알림
+- 마감 자동 처리(주기적 작업)
+- Slack 알림 연동
+- 활동 로그 실시간 연동
+
+---
+
+## 🛠️ 기술 요약 (프론트엔드)
+
+- React + TypeScript
+- Vite (개발 서버, 빌드)
+- React-Bootstrap + custom CSS
+
+---
+
+## 🧩 문제 해결 전략
+
+청약알리미는 단순히 정보를 “보여주는 앱”이 아니라,  
+**반복되고 실수하기 쉬운 인간의 행동을 시스템으로 대체하는 것**에 초점을 두고 설계했다.
+
+### 1️⃣ 사람이 하던 “매일 확인”을 시스템으로 대체
+
+- 정해진 주기에 자동으로 API를 호출
+- 사람이 직접 확인하지 않아도 동일한 기준으로 반복 수행
+
+→ 확인 주체를 **사람 → 프로그램**으로 전환
+
+### 2️⃣ 변경 여부를 감이 아닌 데이터 비교로 판단
+
+- 기존 DB 데이터와 신규 수집 데이터를 비교
+- 신규 / 일정 변경 / 상태 변경을 명확한 기준으로 판별
+
+→ 느낌이 아니라 **데이터 차이로 판단**
+
+### 3️⃣ 놓치기 쉬운 마감을 자동 처리
+
+- 하루 1회 자동 마감 로직 실행
+- 종료된 공고를 자동으로 상태 반영
+
+→ 사후 정리 작업을 자동화
+
+### 4️⃣ 기다려서 확인 → 알림 받는 구조
+
+- Slack 알림으로 중요한 변화만 전달
+- 불필요한 확인 작업 제거
+
+→ 개인용 알림 시스템처럼 사용
+
+---
+
+## 🛠️ 구현 상 고려사항 (리스트/성능)
+
+> 원본 WinForms에서 겪은 UI 버벅임 문제는 백엔드/데스크톱 환경 특유의 이슈였습니다. 웹 프론트엔드에서는 다음 항목을 우선적으로 고려해 성능 저하를 방지할 예정입니다.
+
+- 로그인 기능 슬랙 메시지를 보낼 수 있도록 토큰 키를 등록하기위해서는 각자의 계정이 있어야한다고 판단
+- 리스트 가시성 최적화: 대량 데이터는 가상화(react-window, react-virtualized) 또는 페이징 적용
+- 렌더링 최소화: `React.memo`, 리스트 아이템의 키 안정성, 불필요한 상태 변경 회피
+- 입력 디바운스: 검색/필터 입력 시 디바운스로 불필요한 리렌더링 감소
+- 서버측 페이징/정렬: 클라이언트 단에서 모든 데이터를 처리하지 않도록 API 설계 권장
+- 접근성/UX: 키보드 탐색 경험을 원활히 유지하면서도 렌더링 비용을 제어
+
+이 내용은 프론트엔드 구현 단계에서 구체적으로 적용하고 검증할 계획입니다.
+
+---
+
+## 🌱 앞으로의 방향
+
+초기 목적은 나와 여자친구를 위한 도구였지만,  
+개발하면서 생각이 조금 바뀌었다.
+
+> “이거, 나처럼 공고 놓치기 싫은 사람들에게도 유용하겠다.”
+
+그래서 앞으로는 이런 기능도 고려 중이다.
+
+- [ ] 로그인 테이블 생성 및 기능 구현
+- [ ] 관심 단지 설정 기능
+- [ ] D-day / D-3 알림
+- [ ] 지역 확장(서울 / 경기 등)
+- [ ] 웹 대시보드 제공
+- [ ] 모바일 알림(FCM)
+
+---
+
+## ✨ 마무리
+
+이 프로젝트는  
+대단한 기술을 보여주기 위한 것도,  
+상업적인 서비스를 만들기 위한 것도 아니다.
+
+**바쁜 일상 속에서,  
+내가 지켜야 할 가장 중요한 것 하나를  
+조금이라도 편하게 관리하기 위해 만든 도구**다.
+
+그리고 그 출발점은  
+**우리 둘의 미래 집**이다.
