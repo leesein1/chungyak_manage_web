@@ -1,3 +1,10 @@
+/**
+ * DashboardCalendar
+ * 용도: 대시보드에 표시되는 달력 컴포넌트입니다.
+ * - 달력 그리드, 날짜별 이벤트 마커, 선택일의 이벤트 리스트를 제공합니다.
+ * 위치: `src/pages/Dashboard.tsx`에서 사용됩니다.
+ */
+
 import React, { useMemo, useState } from "react";
 import "./DashboardCalendar.css";
 

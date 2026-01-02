@@ -1,3 +1,10 @@
+/**
+ * Login
+ * 용도: 관리자 로그인 페이지입니다.
+ * - 현재는 샘플 UI로, 실제 인증은 추후 API 연동 예정입니다.
+ * 위치: `src/App.tsx`의 `/` 라우트에 연결됩니다.
+ */
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";

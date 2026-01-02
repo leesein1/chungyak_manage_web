@@ -1,14 +1,19 @@
-import React from "react";
+/**
+ * DashboardKpi
+ * 용도: 대시보드 최상단의 KPI(요약 카드)들을 렌더링하는 컴포넌트입니다.
+ * 위치: `src/pages/Dashboard.tsx`에서 사용됩니다.
+ */
+
 import { Container, Col, Row } from "react-bootstrap";
 import { FaBell, FaHeart, FaPlayCircle, FaSyncAlt } from "react-icons/fa";
-import KpiCard from "@/components/dashboard/Kpicard"; // 경로는 너 프로젝트에 맞게 수정
+import KpiCard from "./KpiCard";
 
 export default function DashboardKpi() {
   return (
     <Container fluid className="px-0">
       {/* gx-3: 컬럼 간격, 필요하면 gx-0(간격없음) / gx-2(조금) */}
       <Row className="kpi gx-3">
-        {/* ✅ 4개 가로 배치: lg=3 / md=6 / sm=12 */}
+        {/* 4개 가로 배치: lg=3 / md=6 / sm=12 */}
         <Col lg={12} md={6} sm={12} className="mb-3">
           <KpiCard
             title="진행중"

@@ -1,3 +1,10 @@
+/**
+ * App
+ * 용도: 애플리케이션 라우팅을 정의하는 엔트리 컴포넌트입니다.
+ * - 로그인 라우트와 인증 후 메인 레이아웃 내 페이지들을 연결합니다.
+ * 위치: `src/main.tsx`에서 렌더링됩니다.
+ */
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./app.css";
 

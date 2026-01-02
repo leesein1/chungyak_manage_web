@@ -1,3 +1,9 @@
+/**
+ * Dashboard
+ * 용도: 메인 관제(대시보드) 페이지입니다. KPI 요약, 달력, 마감 임박 목록, 업데이트 로그 등을 표시합니다.
+ * 위치: `src/App.tsx`의 `/dashboard` 라우트에 연결됩니다.
+ */
+
 import { Card, Col, Row } from "react-bootstrap";
 import DashboardKpi from "@/components/dashboard/DashboardKpi";
 

@@ -1,3 +1,9 @@
+/**
+ * KpiCard
+ * 용도: KPI 요약 카드 단일 아이템 컴포넌트입니다.
+ * - `DashboardKpi`에서 여러 개를 조합해 사용합니다.
+ */
+
 import { Card } from "react-bootstrap";
 
 export default function KpiCard({
