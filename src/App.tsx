@@ -6,7 +6,7 @@
  */
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import "./app.css";
+import "./App.css";
 
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
