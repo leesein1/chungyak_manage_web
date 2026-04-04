@@ -22,7 +22,7 @@ export default function AppLayout() {
           <SideItem
             to="/dashboard"
             icon={<FaTachometerAlt />}
-            label="메인 관제"
+            label="대시보드"
             end
           />
           <SideItem to="/search" icon={<FaSearch />} label="조회" />
@@ -30,9 +30,11 @@ export default function AppLayout() {
         </nav>
 
         <div className="sidebar-footer">
+          {/*
           <div className="small" style={{ color: "rgba(203,213,225,.7)" }}>
             UI only · API는 추후 진행
           </div>
+          */}
         </div>
       </aside>
 

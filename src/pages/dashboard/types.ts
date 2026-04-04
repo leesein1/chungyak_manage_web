@@ -3,8 +3,12 @@
 export type ApiRcvhome = {
   "고유번호"?: string;
   "공고명"?: string;
+  "공고일"?: string;
   "단지명"?: string;
   "상태"?: string;
+  "청약공고일"?: string;
+  "모집공고일"?: string;
+  RCRIT_PBLANC_DE?: string;
   "접수시작일"?: string;
   "접수마감일"?: string;
   "접수기간"?: string;
@@ -25,6 +29,7 @@ export type SoonItem = {
   id: string;
   dday: number;
   title: string;
+  RCRIT_PBLANC_DE: string;
   region: string;
   period: string;
   status: string;
@@ -45,6 +50,7 @@ export type DashboardState = {
   lastSyncLabel: string;
   syncHealthy: boolean;
   soonItems: SoonItem[];
+  favoriteItems: SoonItem[];
   updates: UpdateItem[];
   calendarEvents: CalendarEvent[];
 };
@@ -57,6 +63,7 @@ export const initialDashboardState: DashboardState = {
   lastSyncLabel: "정보 없음",
   syncHealthy: false,
   soonItems: [],
+  favoriteItems: [],
   updates: [],
   calendarEvents: [],
 };

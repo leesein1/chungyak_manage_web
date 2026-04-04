@@ -56,13 +56,17 @@
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 999px;
-  padding: 7px 12px;
+  padding: 9px 14px;
   background: rgba(255, 255, 255, 0.13);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.hero-badge svg {
+  font-size: 15px;
 }
 
 .dash-load-error {
@@ -197,6 +201,68 @@
   box-shadow: 0 10px 24px rgba(20, 28, 68, 0.08);
 }
 
+.dash-loader-card {
+  background: linear-gradient(165deg, #ffffff 0%, #f8faff 100%);
+}
+
+.dash-loader-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #5a6384;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.dash-segmented-tabs {
+  width: min(430px, 54%);
+  min-width: 280px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid #d9def7;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f2f4fb;
+}
+
+.dash-segment-btn {
+  border: 0;
+  border-right: 1px solid #d9def7;
+  background: transparent;
+  color: #5b637f;
+  min-height: 48px;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.dash-segment-btn:last-child {
+  border-right: 0;
+}
+
+.dash-segment-btn.is-active {
+  background: #ffffff;
+  color: #212846;
+}
+
+.dash-table-scroll {
+  max-height: 360px;
+  overflow: auto;
+}
+
+.dash-table-scroll table {
+  min-width: 780px;
+}
+
+.dash-table-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 1;
+}
+
 .dash-update-item {
   border: 1px solid #e7ebf7;
   border-radius: 14px;
@@ -216,5 +282,19 @@
   .dash-hero-art {
     max-width: 300px;
     justify-self: center;
+  }
+
+  .hero-badge {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .hero-badge svg {
+    font-size: 14px;
+  }
+
+  .dash-segmented-tabs {
+    width: 100%;
+    min-width: 0;
   }
 }

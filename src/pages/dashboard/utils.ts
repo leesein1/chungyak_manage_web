@@ -10,7 +10,26 @@ import type {
 // ISO 문자열을 yyyy-mm-dd 포맷으로 변환합니다.
 function toIsoDate(value?: string) {
   if (!value) return "";
-  const date = new Date(value);
+  const trimmed = value.trim();
+  const compact = trimmed.replace(/[.\-/]/g, "");
+
+  if (/^\d{8,14}$/.test(compact)) {
+    const ymd = compact.slice(0, 8);
+    const y = Number(ymd.slice(0, 4));
+    const m = Number(ymd.slice(4, 6));
+    const d = Number(ymd.slice(6, 8));
+    const date = new Date(y, m - 1, d);
+    if (
+      !Number.isNaN(date.getTime()) &&
+      date.getFullYear() === y &&
+      date.getMonth() === m - 1 &&
+      date.getDate() === d
+    ) {
+      return `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    }
+  }
+
+  const date = new Date(trimmed);
   if (Number.isNaN(date.getTime())) return "";
 
   const y = date.getFullYear();
@@ -64,10 +83,15 @@ export function buildDateRangeQuery() {
 
 // API 한 건을 마감 임박 테이블에서 쓰는 ViewModel로 변환합니다.
 export function toSoonItem(row: ApiRcvhome): SoonItem {
+  const rcritPblancDe = toIsoDate(
+    row["공고일"] ?? row["청약공고일"] ?? row["모집공고일"] ?? row.RCRIT_PBLANC_DE
+  );
+
   return {
     id: row["고유번호"] ?? Math.random().toString(36).slice(2),
     dday: parseDday(row["남은일수"]),
     title: row["공고명"] ?? "공고명 없음",
+    RCRIT_PBLANC_DE: rcritPblancDe || "-",
     region: row["주소"]?.trim() || "지역 정보 없음",
     period: row["접수기간"] ?? "일정 정보 없음",
     status: row["상태"] ?? "상태 미상",
@@ -80,8 +104,22 @@ export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
 
   rows.slice(0, 20).forEach((row) => {
     const title = row["공고명"] ?? "공고";
+    const announceDate = toIsoDate(
+      row["공고일"] ?? row["청약공고일"] ?? row["모집공고일"] ?? row.RCRIT_PBLANC_DE
+    );
     const startDate = toIsoDate(row["접수시작일"]);
     const endDate = toIsoDate(row["접수마감일"]);
+
+    if (announceDate) {
+      const key = `${announceDate}-ANNOUNCE-${title}`;
+      map.set(key, {
+        date: announceDate,
+        type: "ANNOUNCE",
+        title: `${title} 모집 공고`,
+        badgeText: "공고",
+        badgeTone: "blue",
+      });
+    }
 
     if (startDate) {
       const key = `${startDate}-RECEIVE-${title}`;
@@ -101,7 +139,7 @@ export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
         type: "RESULT",
         title: `${title} 접수 마감`,
         badgeText: "마감",
-        badgeTone: "gray",
+        badgeTone: "orange",
       });
     }
   });
@@ -164,7 +202,8 @@ export function buildDashboardStateFromApi(
     favoriteCount,
     lastSyncLabel,
     syncHealthy,
-    soonItems: deadlineRows.slice(0, 5).map(toSoonItem),
+    soonItems: deadlineRows.map(toSoonItem),
+    favoriteItems: favoriteRows.map(toSoonItem),
     updates: buildUpdates(scheduleLast, favoriteCount, deadlineSoonCount, lastSyncLabel),
     calendarEvents: buildCalendarEvents(allRows),
   };

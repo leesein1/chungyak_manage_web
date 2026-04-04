@@ -280,9 +280,9 @@
 
 .event-item {
   display: grid;
-  grid-template-columns: 88px 1fr;
-  gap: 12px;
-  padding: 14px 4px;
+  grid-template-columns: 76px 1fr;
+  gap: 8px;
+  padding: 12px 4px;
   border-bottom: 1px solid #eef0f6;
   align-items: center;
 }
@@ -290,7 +290,7 @@
 .event-badge {
   font-weight: 900;
   font-size: 12px;
-  padding: 6px 10px;
+  padding: 5px 8px;
   border-radius: 10px;
   color: #fff;
   text-align: center;
@@ -312,6 +312,9 @@
 .tone-blue {
   background: #2563eb;
 }
+.tone-orange {
+  background: #f59e0b;
+}
 
 .event-title {
   font-weight: 750;
@@ -326,6 +329,58 @@
   text-align: center;
   color: #6b7280;
   font-weight: 650;
+}
+
+.cal-right-legend {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.cal-right-legend-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #d7deef;
+  background: #fff;
+  color: #1f2430;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cal-right-legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #9ca3af;
+}
+
+.cal-right-legend-pill.t-announce {
+  border-color: rgba(37, 99, 235, 0.35);
+}
+
+.cal-right-legend-pill.t-announce .cal-right-legend-dot {
+  background: #2563eb;
+}
+
+.cal-right-legend-pill.t-receive {
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.cal-right-legend-pill.t-receive .cal-right-legend-dot {
+  background: #ef4444;
+}
+
+.cal-right-legend-pill.t-result {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.cal-right-legend-pill.t-result .cal-right-legend-dot {
+  background: #f59e0b;
 }
 
 .right-actions {

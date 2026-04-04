@@ -1,38 +1,20 @@
-/**
- * DashboardCalendar
- * 용도: 대시보드에 표시되는 달력 컴포넌트입니다.
- * - 달력 그리드, 날짜별 이벤트 마커, 선택일의 이벤트 리스트를 제공합니다.
- * 위치: `src/pages/Dashboard.tsx`에서 사용됩니다.
- */
-
 import { useMemo, useState } from "react";
 import "./DashboardCalendar.css";
 
 export type CalendarEventType = "ANNOUNCE" | "RECEIVE" | "RESULT";
 
 export type CalendarEvent = {
-  /** yyyy-mm-dd */
-  date: string;
+  date: string; // yyyy-mm-dd
   type: CalendarEventType;
   title: string;
-
-  /** 우측 리스트에 붙일 뱃지 (예: 매입임대/영구임대 등) */
   badgeText?: string;
-  /** 뱃지 색상 (없으면 타입 기본색) */
-  badgeTone?: "green" | "red" | "gray" | "purple" | "blue";
+  badgeTone?: "green" | "red" | "gray" | "purple" | "blue" | "orange";
 };
 
 type Props = {
-  /** 달력에 표시할 이벤트들 */
   events: CalendarEvent[];
-
-  /** 초기 표시 월 (없으면 오늘) */
   initialMonth?: Date;
-
-  /** “지도/달력” 토글 UI만 보여주기용 (기능 연결은 나중에) */
   showMapToggle?: boolean;
-
-  /** 날짜 선택 변경을 외부로도 알리고 싶으면 */
   onSelectDate?: (date: Date) => void;
 };
 
@@ -41,7 +23,7 @@ const WEEKDAYS_KO = ["일", "월", "화", "수", "목", "금", "토"] as const;
 const TYPE_LABEL: Record<CalendarEventType, string> = {
   ANNOUNCE: "청약공고",
   RECEIVE: "청약접수",
-  RESULT: "당첨자발표",
+  RESULT: "청약마감",
 };
 
 export default function DashboardCalendar({
@@ -65,7 +47,6 @@ export default function DashboardCalendar({
 
   const monthGrid = useMemo(() => buildMonthGrid(viewMonth), [viewMonth]);
 
-  // dateKey -> { ANNOUNCE?:true, RECEIVE?:true, RESULT?:true }
   const markersByDay = useMemo(() => {
     const map = new Map<string, Record<CalendarEventType, boolean>>();
     for (const e of events) {
@@ -107,7 +88,6 @@ export default function DashboardCalendar({
 
   return (
     <div className="cal-wrap">
-      {/* 좌측 */}
       <div className="cal-left">
         <div className="cal-top">
           <div className="cal-top-title">
@@ -197,11 +177,10 @@ export default function DashboardCalendar({
           <LegendItem label="선택일" kind="selected" />
           <LegendItem label="청약공고일" kind="ANNOUNCE" />
           <LegendItem label="청약접수일" kind="RECEIVE" />
-          <LegendItem label="당첨자발표일" kind="RESULT" />
+          <LegendItem label="청약마감일" kind="RESULT" />
         </div>
       </div>
 
-      {/* 우측 */}
       <div className="cal-right">
         <div className="right-title">{rightTitle}</div>
 
@@ -228,7 +207,7 @@ export default function DashboardCalendar({
 
         <div className="event-list">
           {selectedEvents.length === 0 ? (
-            <div className="empty">선택한 날짜에 표시할 항목이 없습니다.</div>
+            <div className="empty">선택한 날짜의 표시할 항목이 없습니다.</div>
           ) : (
             selectedEvents.map((e, idx) => (
               <div key={`${e.date}-${e.type}-${idx}`} className="event-item">
@@ -245,6 +224,20 @@ export default function DashboardCalendar({
           )}
         </div>
 
+        <div className="cal-right-legend">
+          {(["ANNOUNCE", "RECEIVE", "RESULT"] as CalendarEventType[]).map(
+            (t) => (
+              <span
+                key={`legend-${t}`}
+                className={`cal-right-legend-pill t-${t.toLowerCase()}`}
+              >
+                <span className="cal-right-legend-dot" />
+                {defaultBadgeByType(t)}
+              </span>
+            )
+          )}
+        </div>
+
         <div className="right-actions">
           <button className="outline-btn" type="button">
             모집공고 전체보기
@@ -255,7 +248,6 @@ export default function DashboardCalendar({
   );
 }
 
-/** ---------- 작은 컴포넌트 ---------- */
 function LegendItem({
   label,
   kind,
@@ -294,7 +286,6 @@ function legendDotClass(t: CalendarEventType) {
   return "dot-result";
 }
 
-/** ---------- helpers ---------- */
 function stripTime(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
@@ -316,7 +307,7 @@ function formatYmd(d: Date) {
 
 function buildMonthGrid(viewMonth: Date) {
   const first = startOfMonth(viewMonth);
-  const firstDayOfWeek = first.getDay(); // 0 (Sun) ~ 6
+  const firstDayOfWeek = first.getDay();
   const start = new Date(
     first.getFullYear(),
     first.getMonth(),
@@ -329,6 +320,7 @@ function buildMonthGrid(viewMonth: Date) {
     day: number;
     inMonth: boolean;
   }[] = [];
+
   for (let i = 0; i < 42; i++) {
     const d = new Date(
       start.getFullYear(),
@@ -342,17 +334,18 @@ function buildMonthGrid(viewMonth: Date) {
       inMonth: d.getMonth() === viewMonth.getMonth(),
     });
   }
+
   return cells;
 }
 
 function toneByType(t: CalendarEventType) {
   if (t === "ANNOUNCE") return "green";
   if (t === "RECEIVE") return "red";
-  return "gray";
+  return "orange";
 }
 
 function defaultBadgeByType(t: CalendarEventType) {
   if (t === "ANNOUNCE") return "모집공고";
   if (t === "RECEIVE") return "접수";
-  return "발표";
+  return "마감";
 }
