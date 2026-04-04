@@ -17,6 +17,7 @@ export default function KpiCard({
   tone?: "indigo" | "orange" | "rose" | "emerald";
 }) {
   return (
+    // KPI 단일 카드: 타이틀/값/아이콘/보조지표(chip)를 한 카드로 묶어 렌더링합니다.
     <Card className={`kpi-card tone-${tone ?? "indigo"}`}>
       <Card.Body>
         <div className="kpi-head">

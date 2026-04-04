@@ -26,6 +26,7 @@ export default function DashboardKpi({
   lastSyncLabel,
   syncHealthy,
 }: Props) {
+  // KPI 카드별 표시 문구/수치/톤을 한 번에 구성합니다.
   const kpis = [
     {
       title: "1. 진행중 공고",
@@ -79,6 +80,7 @@ export default function DashboardKpi({
 
   return (
     <Container fluid className="px-0 mb-3">
+      {/* KPI 카드 그리드: 카드 배열을 순회하며 반응형으로 렌더링합니다. */}
       <Row className="kpi gx-3">
         {kpis.map((item) => (
           <Col key={item.title} lg={12} md={6} sm={12} className="mb-3">
