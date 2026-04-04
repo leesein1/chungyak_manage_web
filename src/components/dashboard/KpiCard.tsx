@@ -1,9 +1,4 @@
-/**
- * KpiCard
- * 용도: KPI 요약 카드 단일 아이템 컴포넌트입니다.
- * - `DashboardKpi`에서 여러 개를 조합해 사용합니다.
- */
-
+﻿import type { ReactNode } from "react";
 import { Card } from "react-bootstrap";
 
 export default function KpiCard({
@@ -11,21 +6,31 @@ export default function KpiCard({
   value,
   icon,
   hint,
+  chip,
+  tone,
 }: {
   title: string;
   value: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   hint: string;
+  chip?: ReactNode;
+  tone?: "indigo" | "orange" | "rose" | "emerald";
 }) {
   return (
-    <Card className="kpi-card">
+    <Card className={`kpi-card tone-${tone ?? "indigo"}`}>
       <Card.Body>
-        <div className="kpi-title">{title}</div>
-        <div className="kpi-value">
-          {value}
-          <span className="kpi-icon">{icon}</span>
+        <div className="kpi-head">
+          <div className="kpi-title">{title}</div>
+          <div className="kpi-icon-wrap">
+            <span className="kpi-icon">{icon}</span>
+          </div>
         </div>
-        <div className="kpi-hint">{hint}</div>
+
+        <div className="kpi-value">{value}</div>
+        <div className="kpi-foot">
+          <div className="kpi-hint">{hint}</div>
+          {chip ? <span className="kpi-chip">{chip}</span> : null}
+        </div>
       </Card.Body>
     </Card>
   );

@@ -1,54 +1,97 @@
-/**
- * DashboardKpi
- * 용도: 대시보드 최상단의 KPI(요약 카드)들을 렌더링하는 컴포넌트입니다.
- * 위치: `src/pages/Dashboard.tsx`에서 사용됩니다.
- */
-
-import { Container, Col, Row } from "react-bootstrap";
-import { FaBell, FaHeart, FaPlayCircle, FaSyncAlt } from "react-icons/fa";
+﻿import { Container, Col, Row } from "react-bootstrap";
+import {
+  FaBell,
+  FaChartLine,
+  FaHeart,
+  FaSyncAlt,
+  FaArrowUp,
+  FaArrowDown,
+} from "react-icons/fa";
 import KpiCard from "./KpiCard";
 
-export default function DashboardKpi() {
+type Props = {
+  totalCount: number;
+  ongoingCount: number;
+  deadlineSoonCount: number;
+  favoriteCount: number;
+  lastSyncLabel: string;
+  syncHealthy: boolean;
+};
+
+export default function DashboardKpi({
+  totalCount,
+  ongoingCount,
+  deadlineSoonCount,
+  favoriteCount,
+  lastSyncLabel,
+  syncHealthy,
+}: Props) {
+  const kpis = [
+    {
+      title: "1. 진행중 공고",
+      value: String(ongoingCount),
+      icon: <FaChartLine />,
+      hint: "접수중 / 접수예정",
+      chip: (
+        <>
+          <FaArrowUp /> 총 {totalCount}
+        </>
+      ),
+      tone: "indigo" as const,
+    },
+    {
+      title: "2. D-7 임박",
+      value: String(deadlineSoonCount),
+      icon: <FaBell />,
+      hint: "마감 임박",
+      chip: (
+        <>
+          <FaArrowDown /> 임박 {deadlineSoonCount}
+        </>
+      ),
+      tone: "orange" as const,
+    },
+    {
+      title: "3. 즐겨찾기",
+      value: String(favoriteCount),
+      icon: <FaHeart />,
+      hint: "관심 공고",
+      chip: (
+        <>
+          <FaArrowUp /> 관심 {favoriteCount}
+        </>
+      ),
+      tone: "rose" as const,
+    },
+    {
+      title: "4. 마지막 동기화",
+      value: lastSyncLabel,
+      icon: <FaSyncAlt />,
+      hint: syncHealthy ? "API 연결 정상" : "동기화 확인 필요",
+      chip: (
+        <>
+          {syncHealthy ? <FaArrowUp /> : <FaArrowDown />} {syncHealthy ? "LIVE" : "WARN"}
+        </>
+      ),
+      tone: "emerald" as const,
+    },
+  ];
+
   return (
-    <Container fluid className="px-0">
-      {/* gx-3: 컬럼 간격, 필요하면 gx-0(간격없음) / gx-2(조금) */}
+    <Container fluid className="px-0 mb-3">
       <Row className="kpi gx-3">
-        {/* 4개 가로 배치: lg=3 / md=6 / sm=12 */}
-        <Col lg={12} md={6} sm={12} className="mb-3">
-          <KpiCard
-            title="진행중"
-            value="18"
-            icon={<FaPlayCircle />}
-            hint="접수중/진행중"
-          />
-        </Col>
-
-        <Col lg={12} md={6} sm={12} className="mb-3">
-          <KpiCard
-            title="D-7 임박"
-            value="5"
-            icon={<FaBell />}
-            hint="마감 임박"
-          />
-        </Col>
-
-        <Col lg={12} md={6} sm={12} className="mb-3">
-          <KpiCard
-            title="즐겨찾기"
-            value="12"
-            icon={<FaHeart />}
-            hint="관심 공고"
-          />
-        </Col>
-
-        <Col lg={12} md={6} sm={12} className="mb-3">
-          <KpiCard
-            title="마지막 동기화"
-            value="방금"
-            icon={<FaSyncAlt />}
-            hint="API 연결 전"
-          />
-        </Col>
+        {kpis.map((item) => (
+          <Col key={item.title} lg={12} md={6} sm={12} className="mb-3">
+            <KpiCard
+              title={item.title}
+              value={item.value}
+              icon={item.icon}
+              hint={item.hint}
+              tone={item.tone}
+              chip={item.chip}
+            />
+          </Col>
+        ))}
       </Row>
     </Container>
   );
