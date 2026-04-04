@@ -4,7 +4,7 @@
  * 위치: `src/pages/Search.tsx`의 리스트 영역에서 사용됩니다.
  */
 
-import React from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { Card } from "react-bootstrap";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
@@ -25,7 +25,7 @@ type Props = {
   selectedId: string;
   setSelectedId: (id: string) => void;
   fav: Record<string, boolean>;
-  setFav: (f: Record<string, boolean>) => void;
+  setFav: Dispatch<SetStateAction<Record<string, boolean>>>;
 };
 
 export default function ListPanel({

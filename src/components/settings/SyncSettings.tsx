@@ -6,7 +6,6 @@
  * 위치: `src/pages/Settings.tsx`에서 사용됩니다.
  */
 
-import React from "react";
 import { Card, Col, Form, Row } from "react-bootstrap";
 
 export default function SyncSettings() {

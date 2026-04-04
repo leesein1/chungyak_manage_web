@@ -5,7 +5,7 @@
  * 위치: `src/pages/Dashboard.tsx`에서 사용됩니다.
  */
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import "./DashboardCalendar.css";
 
 export type CalendarEventType = "ANNOUNCE" | "RECEIVE" | "RESULT";
