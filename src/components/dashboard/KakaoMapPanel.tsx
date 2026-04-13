@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type MapNoticePoint = {
   id: string;
@@ -44,7 +44,9 @@ function loadKakaoSdk(appKey: string) {
   if (sdkPromise) return sdkPromise;
 
   sdkPromise = new Promise((resolve, reject) => {
-    const existing = document.getElementById(SDK_ID) as HTMLScriptElement | null;
+    const existing = document.getElementById(
+      SDK_ID,
+    ) as HTMLScriptElement | null;
     if (existing) {
       const expectedSrc = `https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&libraries=services&appkey=${appKey}`;
       // 이전에 다른 키로 로드된 script가 남아있으면 교체해서 키 변경을 반영한다.
@@ -85,8 +87,13 @@ function buildMarkerSvgDataUri(color: string) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
-function getMarkerImage(kakao: any, eventType?: "ANNOUNCE" | "RECEIVE" | "RESULT") {
-  const color = MARKER_COLOR_BY_TYPE[eventType ?? "ANNOUNCE"] ?? MARKER_COLOR_BY_TYPE.ANNOUNCE;
+function getMarkerImage(
+  kakao: any,
+  eventType?: "ANNOUNCE" | "RECEIVE" | "RESULT",
+) {
+  const color =
+    MARKER_COLOR_BY_TYPE[eventType ?? "ANNOUNCE"] ??
+    MARKER_COLOR_BY_TYPE.ANNOUNCE;
   const src = buildMarkerSvgDataUri(color);
   const size = new kakao.maps.Size(30, 40);
   const offset = new kakao.maps.Point(15, 40);
@@ -141,7 +148,9 @@ export default function KakaoMapPanel({
     async function initMap() {
       if (!mapRef.current) return;
       if (!appKey) {
-        setError("카카오맵 API 키가 없습니다. `.env.local`에 `VITE_KAKAO_MAP_APP_KEY`를 설정해 주세요.");
+        setError(
+          "카카오맵 API 키가 없습니다. `.env.local`에 `VITE_KAKAO_MAP_APP_KEY`를 설정해 주세요.",
+        );
         return;
       }
 
@@ -155,7 +164,10 @@ export default function KakaoMapPanel({
 
         if (!mapInstanceRef.current) {
           mapInstanceRef.current = new kakao.maps.Map(mapRef.current, {
-            center: new kakao.maps.LatLng(DEFAULT_CENTER.lat, DEFAULT_CENTER.lng),
+            center: new kakao.maps.LatLng(
+              DEFAULT_CENTER.lat,
+              DEFAULT_CENTER.lng,
+            ),
             level: 7,
           });
           infoWindowRef.current = new kakao.maps.InfoWindow({ zIndex: 3 });
@@ -179,25 +191,40 @@ export default function KakaoMapPanel({
           dedupedPoints.map(
             (point) =>
               new Promise<ResolvedPoint>((resolve) => {
-                geocoder.addressSearch(point.address, (result: any[], status: string) => {
-                  if (status === kakao.maps.services.Status.OK && result[0]) {
-                    const coords = new kakao.maps.LatLng(Number(result[0].y), Number(result[0].x));
-                    resolve({ point, coords });
-                    return;
-                  }
-
-                  // 주소 변환 실패 시 공고명 키워드 검색으로 한 번 더 좌표를 시도한다.
-                  places.keywordSearch(point.title, (placeResult: any[], placeStatus: string) => {
-                    if (placeStatus === kakao.maps.services.Status.OK && placeResult[0]) {
-                      const coords = new kakao.maps.LatLng(Number(placeResult[0].y), Number(placeResult[0].x));
+                geocoder.addressSearch(
+                  point.address,
+                  (result: any[], status: string) => {
+                    if (status === kakao.maps.services.Status.OK && result[0]) {
+                      const coords = new kakao.maps.LatLng(
+                        Number(result[0].y),
+                        Number(result[0].x),
+                      );
                       resolve({ point, coords });
                       return;
                     }
-                    resolve({ point, coords: null });
-                  });
-                });
-              })
-          )
+
+                    // 주소 변환 실패 시 공고명 키워드 검색으로 한 번 더 좌표를 시도한다.
+                    places.keywordSearch(
+                      point.title,
+                      (placeResult: any[], placeStatus: string) => {
+                        if (
+                          placeStatus === kakao.maps.services.Status.OK &&
+                          placeResult[0]
+                        ) {
+                          const coords = new kakao.maps.LatLng(
+                            Number(placeResult[0].y),
+                            Number(placeResult[0].x),
+                          );
+                          resolve({ point, coords });
+                          return;
+                        }
+                        resolve({ point, coords: null });
+                      },
+                    );
+                  },
+                );
+              }),
+          ),
         );
 
         if (!active) return;
@@ -234,7 +261,10 @@ export default function KakaoMapPanel({
         }
       } catch (e) {
         if (!active) return;
-        const message = e instanceof Error ? e.message : "카카오맵 로딩 중 오류가 발생했습니다.";
+        const message =
+          e instanceof Error
+            ? e.message
+            : "카카오맵 로딩 중 오류가 발생했습니다.";
         setError(message);
       }
     }
@@ -261,16 +291,24 @@ export default function KakaoMapPanel({
 
   return (
     <div className="kakao-map-panel">
-      <div className="kakao-map-title">{selectedDateLabel} 진행/예정 공고 지도</div>
+      <div className="kakao-map-title">
+        {selectedDateLabel} 진행/예정 공고 지도
+      </div>
       {error ? <div className="kakao-map-error">{error}</div> : null}
       <div className="kakao-map-shell">
         <div ref={mapRef} className="kakao-map-canvas" />
       </div>
       {!error && dedupedPoints.length === 0 ? (
-        <div className="kakao-map-empty">선택한 날짜에 지도에 표시할 진행/예정 공고가 없습니다.</div>
+        <div className="kakao-map-empty">
+          선택한 날짜에 지도에 표시할 진행/예정 공고가 없습니다.
+        </div>
       ) : null}
-      {!error && dedupedPoints.length > 0 && resolvedPoints.every((x) => !x.coords) ? (
-        <div className="kakao-map-empty">해당 항목의 위치를 찾지 못했습니다. 주소 데이터 확인이 필요합니다.</div>
+      {!error &&
+      dedupedPoints.length > 0 &&
+      resolvedPoints.every((x) => !x.coords) ? (
+        <div className="kakao-map-empty">
+          해당 항목의 위치를 찾지 못했습니다. 주소 데이터 확인이 필요합니다.
+        </div>
       ) : null}
     </div>
   );

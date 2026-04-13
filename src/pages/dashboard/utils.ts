@@ -1,4 +1,4 @@
-﻿import type { CalendarEvent } from "@/components/dashboard/DashboardCalendar";
+import type { CalendarEvent } from "@/components/dashboard/DashboardCalendar";
 import type {
   ApiRcvhome,
   DashboardState,

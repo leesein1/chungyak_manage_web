@@ -1,4 +1,4 @@
-﻿import type { CalendarEvent } from "@/components/dashboard/DashboardCalendar";
+import type { CalendarEvent } from "@/components/dashboard/DashboardCalendar";
 
 export type ApiRcvhome = {
   "고유번호"?: string;

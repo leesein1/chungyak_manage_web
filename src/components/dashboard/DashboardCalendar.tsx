@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./DashboardCalendar.css";
 import KakaoMapPanel from "./KakaoMapPanel";
 
@@ -37,11 +37,15 @@ export default function DashboardCalendar({
   onSelectDate,
 }: Props) {
   const today = new Date();
-  const [viewMonth, setViewMonth] = useState<Date>(startOfMonth(initialMonth ?? today));
+  const [viewMonth, setViewMonth] = useState<Date>(
+    startOfMonth(initialMonth ?? today),
+  );
   const [selectedDate, setSelectedDate] = useState<Date>(stripTime(today));
   const [viewMode, setViewMode] = useState<"calendar" | "map">("calendar");
   const [selectedMapPointId, setSelectedMapPointId] = useState("");
-  const [activeTypes, setActiveTypes] = useState<Record<CalendarEventType, boolean>>({
+  const [activeTypes, setActiveTypes] = useState<
+    Record<CalendarEventType, boolean>
+  >({
     ANNOUNCE: true,
     RECEIVE: true,
     RESULT: true,
@@ -83,7 +87,8 @@ export default function DashboardCalendar({
     };
 
     const progressOrPlanned = selectedEvents.filter(isProgressOrPlanned);
-    const baseEvents = progressOrPlanned.length > 0 ? progressOrPlanned : selectedEvents;
+    const baseEvents =
+      progressOrPlanned.length > 0 ? progressOrPlanned : selectedEvents;
 
     return baseEvents.map((event, idx) => ({
       id: `${event.date}-${event.type}-${idx}`,
@@ -121,7 +126,9 @@ export default function DashboardCalendar({
     <div className="cal-wrap">
       <div className="cal-left">
         <div className="cal-top">
-          <div className="cal-top-title">전국 공공주택 모집공고 달력으로 확인하기</div>
+          <div className="cal-top-title">
+            전국 공공주택 모집공고 달력으로 확인하기
+          </div>
 
           {showMapToggle && (
             <div className="cal-toggle" data-mode={viewMode}>
@@ -145,18 +152,28 @@ export default function DashboardCalendar({
         </div>
 
         <div className="cal-month-nav">
-          <button className="nav-btn" onClick={() => setViewMonth(addMonths(viewMonth, -1))} aria-label="prev month">
+          <button
+            className="nav-btn"
+            onClick={() => setViewMonth(addMonths(viewMonth, -1))}
+            aria-label="prev month"
+          >
             ←
           </button>
           <div className="month-title">{headerTitle}</div>
-          <button className="nav-btn" onClick={() => setViewMonth(addMonths(viewMonth, 1))} aria-label="next month">
+          <button
+            className="nav-btn"
+            onClick={() => setViewMonth(addMonths(viewMonth, 1))}
+            aria-label="next month"
+          >
             →
           </button>
         </div>
 
         <div className="cal-weekdays">
           {WEEKDAYS_KO.map((w, idx) => (
-            <div key={w} className={"wd" + (idx === 0 ? " sun" : "")}>{w}</div>
+            <div key={w} className={"wd" + (idx === 0 ? " sun" : "")}>
+              {w}
+            </div>
           ))}
         </div>
 
@@ -172,14 +189,31 @@ export default function DashboardCalendar({
               <button
                 key={`${key}-${i}`}
                 type="button"
-                className={"day-cell" + (isOtherMonth ? " other" : "") + (isSelected ? " selected" : "") + (isToday ? " today" : "")}
+                className={
+                  "day-cell" +
+                  (isOtherMonth ? " other" : "") +
+                  (isSelected ? " selected" : "") +
+                  (isToday ? " today" : "")
+                }
                 onClick={() => handlePickDate(cell.date)}
               >
                 <div className="day-num">{cell.day}</div>
                 <div className="marks">
-                  {marks?.ANNOUNCE ? <span className="dot dot-announce" /> : <span className="dot-spacer" />}
-                  {marks?.RECEIVE ? <span className="dot dot-receive" /> : <span className="dot-spacer" />}
-                  {marks?.RESULT ? <span className="dot dot-result" /> : <span className="dot-spacer" />}
+                  {marks?.ANNOUNCE ? (
+                    <span className="dot dot-announce" />
+                  ) : (
+                    <span className="dot-spacer" />
+                  )}
+                  {marks?.RECEIVE ? (
+                    <span className="dot dot-receive" />
+                  ) : (
+                    <span className="dot-spacer" />
+                  )}
+                  {marks?.RESULT ? (
+                    <span className="dot dot-result" />
+                  ) : (
+                    <span className="dot-spacer" />
+                  )}
                 </div>
               </button>
             );
@@ -203,8 +237,15 @@ export default function DashboardCalendar({
             <button
               key={t}
               type="button"
-              className={"type-pill" + (activeTypes[t] ? " on" : "") + " t-" + t.toLowerCase()}
-              onClick={() => setActiveTypes((prev) => ({ ...prev, [t]: !prev[t] }))}
+              className={
+                "type-pill" +
+                (activeTypes[t] ? " on" : "") +
+                " t-" +
+                t.toLowerCase()
+              }
+              onClick={() =>
+                setActiveTypes((prev) => ({ ...prev, [t]: !prev[t] }))
+              }
             >
               <span className="pill-dot" />
               {TYPE_LABEL[t]}
@@ -218,7 +259,9 @@ export default function DashboardCalendar({
             <div className="map-list-shell">
               <div className="map-list-scroller">
                 {mapPoints.length === 0 ? (
-                  <div className="empty">선택한 날짜에 지도에 표시할 항목이 없습니다.</div>
+                  <div className="empty">
+                    선택한 날짜에 지도에 표시할 항목이 없습니다.
+                  </div>
                 ) : (
                   mapPoints.map((item) => (
                     <button
@@ -229,13 +272,16 @@ export default function DashboardCalendar({
                       onDoubleClick={() => handleOpenMyHome(item.linkUrl)}
                       title="더블클릭하면 모집공고 페이지로 이동합니다."
                     >
-                      <div className={`event-badge tone-${toneByType(item.eventType)}`}>
+                      <div
+                        className={`event-badge tone-${toneByType(item.eventType)}`}
+                      >
                         {item.eventBadgeLabel}
                       </div>
                       <div className="map-item-text">
                         <div className="event-title">{item.title}</div>
                         <div className="small text-muted mt-1">
-                          {item.eventPhaseLabel} · 상태: {item.status ?? "정보 없음"}
+                          {item.eventPhaseLabel} · 상태:{" "}
+                          {item.status ?? "정보 없음"}
                         </div>
                       </div>
                     </button>
@@ -255,7 +301,9 @@ export default function DashboardCalendar({
           <>
             <div className="event-list">
               {selectedEvents.length === 0 ? (
-                <div className="empty">선택한 날짜에 표시할 항목이 없습니다.</div>
+                <div className="empty">
+                  선택한 날짜에 표시할 항목이 없습니다.
+                </div>
               ) : (
                 selectedEvents.map((e, idx) => (
                   <button
@@ -265,7 +313,12 @@ export default function DashboardCalendar({
                     onDoubleClick={() => handleOpenMyHome(e.linkUrl)}
                     title="더블클릭하면 모집공고 페이지로 이동합니다."
                   >
-                    <div className={"event-badge tone-" + (e.badgeTone ?? toneByType(e.type))}>
+                    <div
+                      className={
+                        "event-badge tone-" +
+                        (e.badgeTone ?? toneByType(e.type))
+                      }
+                    >
                       {e.badgeText ?? defaultBadgeByType(e.type)}
                     </div>
                     <div className="event-title">{e.title}</div>
@@ -275,25 +328,38 @@ export default function DashboardCalendar({
             </div>
 
             <div className="cal-right-legend">
-              {(["ANNOUNCE", "RECEIVE", "RESULT"] as CalendarEventType[]).map((t) => (
-                <span key={`legend-${t}`} className={`cal-right-legend-pill t-${t.toLowerCase()}`}>
-                  <span className="cal-right-legend-dot" />
-                  {defaultBadgeByType(t)}
-                </span>
-              ))}
+              {(["ANNOUNCE", "RECEIVE", "RESULT"] as CalendarEventType[]).map(
+                (t) => (
+                  <span
+                    key={`legend-${t}`}
+                    className={`cal-right-legend-pill t-${t.toLowerCase()}`}
+                  >
+                    <span className="cal-right-legend-dot" />
+                    {defaultBadgeByType(t)}
+                  </span>
+                ),
+              )}
             </div>
           </>
         )}
 
         <div className="right-actions">
-          <button className="outline-btn" type="button">모집공고 전체보기</button>
+          <button className="outline-btn" type="button">
+            모집공고 전체보기
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-function LegendItem({ label, kind }: { label: string; kind: "today" | "selected" | CalendarEventType }) {
+function LegendItem({
+  label,
+  kind,
+}: {
+  label: string;
+  kind: "today" | "selected" | CalendarEventType;
+}) {
   if (kind === "today") {
     return (
       <div className="legend-item">
@@ -347,11 +413,24 @@ function formatYmd(d: Date) {
 function buildMonthGrid(viewMonth: Date) {
   const first = startOfMonth(viewMonth);
   const firstDayOfWeek = first.getDay();
-  const start = new Date(first.getFullYear(), first.getMonth(), 1 - firstDayOfWeek);
+  const start = new Date(
+    first.getFullYear(),
+    first.getMonth(),
+    1 - firstDayOfWeek,
+  );
 
-  const cells: { date: Date; dateKey: string; day: number; inMonth: boolean }[] = [];
+  const cells: {
+    date: Date;
+    dateKey: string;
+    day: number;
+    inMonth: boolean;
+  }[] = [];
   for (let i = 0; i < 42; i++) {
-    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    const d = new Date(
+      start.getFullYear(),
+      start.getMonth(),
+      start.getDate() + i,
+    );
     cells.push({
       date: d,
       dateKey: formatYmd(stripTime(d)),
