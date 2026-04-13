@@ -4,7 +4,6 @@
  * 위치: `src/pages/Search.tsx`에서 사용됩니다.
  */
 
-import React from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 

@@ -96,6 +96,13 @@
   margin-bottom: 14px;
 }
 
+.page-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #7b829b;
+  font-weight: 600;
+}
+
 .card-soft {
   border: 0;
   border-radius: 16px;
@@ -145,4 +152,16 @@
 .btn-purple:hover {
   opacity: .92;
   color: white;
+}
+
+.panel-card {
+  border: 1px solid #e9ecf8;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(20, 28, 68, 0.06);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 14px 16px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }

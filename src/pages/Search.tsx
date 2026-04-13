@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import FilterPanel from "@/components/search/FilterPanel";
-import ListPanel from "@/components/search/ListPanel";
-import DetailPanel from "@/components/search/DetailPanel";
+import FilterPanel from "@/components/Search/FilterPanel";
+import ListPanel from "@/components/Search/ListPanel";
+import DetailPanel from "@/components/Search/DetailPanel";
 
 type RowItem = {
   id: string;

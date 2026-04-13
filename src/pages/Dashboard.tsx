@@ -1,177 +1,100 @@
-/**
- * Dashboard
- * 용도: 메인 관제(대시보드) 페이지입니다. KPI 요약, 달력, 마감 임박 목록, 업데이트 로그 등을 표시합니다.
- * 위치: `src/App.tsx`의 `/dashboard` 라우트에 연결됩니다.
- */
-
-import { Card, Col, Row } from "react-bootstrap";
+import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import DashboardKpi from "@/components/dashboard/DashboardKpi";
+import DashboardCalendar from "@/components/dashboard/DashboardCalendar";
+import DashboardHero from "./dashboard/DashboardHero";
+import DeadlineFavoriteSection from "./dashboard/DeadlineFavoriteSection";
+import RecentUpdatesSection from "./dashboard/RecentUpdatesSection";
+import { useDashboardData } from "./dashboard/useDashboardData";
+import "./Dashboard.css";
 
-// 추가
-import DashboardCalendar, {
-  type CalendarEvent,
-} from "@/components/dashboard/DashboardCalendar";
+function SectionLoader({ label, minHeight }: { label: string; minHeight: number }) {
+  return (
+    <Card className="panel-card dash-section-card dash-loader-card">
+      <Card.Body className="dash-loader-inner" style={{ minHeight }}>
+        <Spinner animation="border" size="sm" role="status" />
+        <span>{label}</span>
+      </Card.Body>
+    </Card>
+  );
+}
 
-type SoonItem = {
-  id: string;
-  dday: number;
-  title: string;
-  region: string;
-  period: string;
-  status: string;
-};
+function KpiLoader() {
+  return (
+    <Container fluid className="px-0 mb-3">
+      <Row className="kpi gx-3">
+        {[1, 2, 3, 4].map((idx) => (
+          <Col key={`kpi-loader-${idx}`} lg={12} md={6} sm={12} className="mb-3">
+            <SectionLoader label="지표 불러오는 중..." minHeight={134} />
+          </Col>
+        ))}
+      </Row>
+    </Container>
+  );
+}
 
-type UpdateItem = {
-  id: string;
-  title: string;
-  when: string;
-  desc: string;
-};
-
-const sampleSoon: SoonItem[] = [
-  {
-    id: "soon-1",
-    dday: 1,
-    title: "검단 센트레빌 에듀시티 (샘플)",
-    region: "인천 서구",
-    period: "2025-12-27 ~ 2025-12-30",
-    status: "접수예정",
-  },
-  {
-    id: "soon-2",
-    dday: 3,
-    title: "송도 유승한내들 (샘플)",
-    region: "인천 연수구",
-    period: "2025-12-29 ~ 2026-01-02",
-    status: "접수예정",
-  },
-];
-
-const sampleUpdates: UpdateItem[] = [
-  {
-    id: "up-1",
-    title: "동기화 완료",
-    when: "방금",
-    desc: "공고 12건 신규/변경 사항 반영 (샘플)",
-  },
-  {
-    id: "up-2",
-    title: "즐겨찾기 반영",
-    when: "10분 전",
-    desc: "관심 공고 1건이 즐겨찾기에 추가됨 (샘플)",
-  },
-];
-
+// 대시보드 페이지 컨테이너입니다. 데이터 훅 결과를 각 섹션 UI로 전달만 합니다.
 export default function Dashboard() {
-  // 달력에 찍을 이벤트 (나중에 API로 교체)
-  const calendarEvents: CalendarEvent[] = [
-    {
-      date: "2025-12-26",
-      type: "ANNOUNCE",
-      title: "2025년 영천시 천원주택(청년 매입임대주택) 입주자 모집",
-      badgeText: "매입임대",
-      badgeTone: "green",
-    },
-    {
-      date: "2025-12-26",
-      type: "ANNOUNCE",
-      title: "청주산남2-1 주거복지동 영구임대 예비입주자 모집",
-      badgeText: "영구임대",
-      badgeTone: "red",
-    },
-    {
-      date: "2025-12-26",
-      type: "RECEIVE",
-      title: "청약 접수 시작(샘플)",
-      badgeText: "접수",
-      badgeTone: "red",
-    },
-    {
-      date: "2025-12-26",
-      type: "RESULT",
-      title: "당첨자 발표(샘플)",
-      badgeText: "발표",
-      badgeTone: "gray",
-    },
-  ];
+  const { loading, error, state, heroStatusText } = useDashboardData();
 
   return (
-    <div>
-      {/* KPI 컴포넌트 */}
-      <DashboardKpi />
+    <div className="dashboard-page">
+      {/* 상단 히어로: 페이지 요약 메시지와 상태 배지를 보여줍니다. */}
+      {loading ? (
+        <SectionLoader label="대시보드 헤더 불러오는 중..." minHeight={220} />
+      ) : (
+        <DashboardHero
+          heroStatusText={heroStatusText}
+          totalCount={state.totalCount}
+          lastSyncLabel={state.lastSyncLabel}
+          error={error}
+        />
+      )}
 
-      {/* KPI 아래에 달력  */}
+      {/* KPI 카드 영역: 핵심 지표 4개를 카드 형태로 보여줍니다. */}
+      {loading ? (
+        <KpiLoader />
+      ) : (
+        <DashboardKpi
+          totalCount={state.totalCount}
+          ongoingCount={state.ongoingCount}
+          deadlineSoonCount={state.deadlineSoonCount}
+          favoriteCount={state.favoriteCount}
+          lastSyncLabel={state.lastSyncLabel}
+          syncHealthy={state.syncHealthy}
+        />
+      )}
+
+      {/* 캘린더 영역: 공고 접수 시작/마감 이벤트를 날짜로 시각화합니다. */}
       <div className="mb-3">
-        <DashboardCalendar events={calendarEvents} />
+        {loading ? (
+          <SectionLoader label="캘린더 불러오는 중..." minHeight={420} />
+        ) : (
+          <DashboardCalendar events={state.calendarEvents} />
+        )}
       </div>
 
-      {/* 아래 두개 유지 */}
+      {/* 하단 영역: 좌측은 D-7/즐겨찾기 공고 전환 목록, 우측은 최근 업데이트 로그를 보여줍니다. */}
       <Row>
+        {/* 좌측 영역: D-7 임박/즐겨찾기 목록을 탭으로 전환해 보여줍니다. */}
         <Col lg={7} className="mb-3">
-          <Card className="panel-card">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <h5 className="mb-0">마감 임박 (D-7)</h5>
-                <button className="btn btn-sm btn-purple">새로고침</button>
-              </div>
-
-              <div className="table-wrap">
-                <table className="table table-sm mb-0">
-                  <thead>
-                    <tr>
-                      <th style={{ width: 110 }}>D-Day</th>
-                      <th>공고명</th>
-                      <th style={{ width: 140 }}>상태</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {sampleSoon.map((x: SoonItem) => (
-                      <tr key={x.id}>
-                        <td className="font-weight-bold">D-{x.dday}</td>
-                        <td>
-                          <div className="font-weight-bold">{x.title}</div>
-                          <div className="small text-muted">
-                            {x.region} · {x.period}
-                          </div>
-                        </td>
-                        <td>
-                          <span className="status-pill">{x.status}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card.Body>
-          </Card>
+          {loading ? (
+            <SectionLoader label="마감/즐겨찾기 목록 불러오는 중..." minHeight={300} />
+          ) : (
+            <DeadlineFavoriteSection
+              loading={loading}
+              soonItems={state.soonItems}
+              favoriteItems={state.favoriteItems}
+            />
+          )}
         </Col>
 
+        {/* 우측 영역: 최근 동기화/요약 업데이트 로그를 보여줍니다. */}
         <Col lg={5} className="mb-3">
-          <Card className="panel-card">
-            <Card.Body>
-              <h5 className="mb-2">최근 업데이트</h5>
-              <div className="small text-muted mb-3">
-                실제로는 동기화/변경이력(TB_RCVHOME_HIST)을 붙여서 보여주면 됨.
-              </div>
-
-              <div className="d-flex flex-column" style={{ gap: 12 }}>
-                {sampleUpdates.map((u: UpdateItem) => (
-                  <div
-                    key={u.id}
-                    className="p-3"
-                    style={{ border: "1px solid #e6e7f2", borderRadius: 14 }}
-                  >
-                    <div className="d-flex justify-content-between">
-                      <div className="font-weight-bold">{u.title}</div>
-                      <span className="badge badge-light">{u.when}</span>
-                    </div>
-                    <div className="small text-muted mt-1">{u.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </Card.Body>
-          </Card>
+          {loading ? (
+            <SectionLoader label="최근 업데이트 불러오는 중..." minHeight={300} />
+          ) : (
+            <RecentUpdatesSection items={state.updates} />
+          )}
         </Col>
       </Row>
     </div>

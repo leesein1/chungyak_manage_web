@@ -4,7 +4,6 @@
  * 위치: `src/pages/Search.tsx`의 상세(우측) 패널로 사용됩니다.
  */
 
-import React from "react";
 import { Card } from "react-bootstrap";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
