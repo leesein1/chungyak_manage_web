@@ -6,16 +6,28 @@ type Props = {
   selectedId: string;
   setSelectedId: (id: string) => void;
   onToggleFavorite: (row: SearchListItem) => void;
+  hasMore: boolean;
+  onLoadMore: () => void;
+  totalCount: number;
 };
 
-export default function ListPanel({ rows, selectedId, setSelectedId, onToggleFavorite }: Props) {
+export default function ListPanel({
+  rows,
+  selectedId,
+  setSelectedId,
+  onToggleFavorite,
+  hasMore,
+  onLoadMore,
+  totalCount,
+}: Props) {
   if (rows.length === 0) {
     return <div className="search-empty">조회 결과가 없습니다.</div>;
   }
 
   return (
-    <div className="search-result-list">
-      {rows.map((row) => (
+    <div>
+      <div className="search-result-list">
+      {rows.map((row, idx) => (
         <article
           key={row.id}
           className={`search-result-item ${selectedId === row.id ? "is-active" : ""}`}
@@ -26,7 +38,10 @@ export default function ListPanel({ rows, selectedId, setSelectedId, onToggleFav
           title="더블클릭하면 모집공고 페이지로 이동합니다."
         >
           <div className="search-result-top">
-            <div className="search-status-pill">{row.status}</div>
+            <div className="search-result-top-left">
+              <div className="search-result-idx">#{idx + 1}</div>
+              <div className="search-status-pill">{row.status}</div>
+            </div>
             <button
               className="search-fav-btn"
               type="button"
@@ -48,6 +63,15 @@ export default function ListPanel({ rows, selectedId, setSelectedId, onToggleFav
           <div className="search-result-dday">{row.ddayText}</div>
         </article>
       ))}
+      </div>
+
+      {hasMore ? (
+        <div className="search-loadmore-wrap">
+          <button className="search-loadmore-btn" type="button" onClick={onLoadMore}>
+            더보기 (현재 {rows.length} / 전체 {totalCount})
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

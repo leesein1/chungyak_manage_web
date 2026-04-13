@@ -23,6 +23,14 @@
   border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
+.sidebar-brand-btn {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
 .sidebar-brand-badge {
   width: 36px;
   height: 36px;
@@ -89,6 +97,14 @@
 .topbar-title {
   font-weight: 800;
   letter-spacing: .2px;
+}
+
+.topbar-title-btn {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  cursor: pointer;
 }
 
 .main {

@@ -2,6 +2,7 @@ export type SearchStatusFilter = "all" | "접수예정" | "접수중" | "접수�
 
 export type SearchListItem = {
   id: string;
+  apiId: string;
   title: string;
   complex: string;
   region: string;
@@ -31,7 +32,9 @@ export type SearchDetailItem = {
 export type SearchFilterParams = {
   keyword: string;
   status: SearchStatusFilter;
+  onlyOngoing: boolean;
   onlySoon: boolean;
+  onlyFavorite: boolean;
   beginFrom: string;
   beginTo: string;
 };

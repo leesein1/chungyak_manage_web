@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import type { SoonItem } from "./types";
 
 type Props = {
@@ -13,8 +14,18 @@ export default function DeadlineFavoriteSection({
   soonItems,
   favoriteItems,
 }: Props) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"soon" | "favorite">("soon");
   const [expanded, setExpanded] = useState(false);
+
+  const navigateToSearch = (keyword?: string) => {
+    const mode = activeTab === "soon" ? "soon" : "favorite";
+    const qs = new URLSearchParams();
+    qs.set("from", "dashboard");
+    qs.set("mode", mode);
+    if (keyword?.trim()) qs.set("keyword", keyword.trim());
+    navigate(`/search?${qs.toString()}`);
+  };
 
   const items = useMemo(
     () => (activeTab === "soon" ? soonItems : favoriteItems),
@@ -85,7 +96,13 @@ export default function DeadlineFavoriteSection({
               즐겨찾기
             </button>
           </div>
-          <button className="btn btn-sm btn-purple">전체보기</button>
+          <button
+            type="button"
+            className="btn btn-sm btn-purple"
+            onClick={() => navigateToSearch()}
+          >
+            전체보기
+          </button>
         </div>
 
         <div className="table-wrap dash-table-scroll">
@@ -101,7 +118,12 @@ export default function DeadlineFavoriteSection({
             </thead>
             <tbody key={activeTab}>
               {visibleItems.map((item, index) => (
-                <tr key={`${activeTab}-${item.id}-${index}`}>
+                <tr
+                  key={`${activeTab}-${item.id}-${index}`}
+                  className="dash-clickable-row"
+                  onDoubleClick={() => navigateToSearch(item.title)}
+                  title="더블클릭하면 조회 화면에서 해당 제목으로 검색합니다."
+                >
                   <td className="font-weight-bold text-muted">{index + 1}</td>
                   <td>
                     <span className="status-pill">{item.status}</span>

@@ -8,6 +8,7 @@ import {
   FaArrowDown,
 } from "react-icons/fa";
 import KpiCard from "./KpiCard";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   totalCount: number;
@@ -26,6 +27,15 @@ export default function DashboardKpi({
   lastSyncLabel,
   syncHealthy,
 }: Props) {
+  const navigate = useNavigate();
+
+  const goSearchWithMode = (mode: "ongoing" | "soon" | "favorite") => {
+    const qs = new URLSearchParams();
+    qs.set("from", "dashboard");
+    qs.set("mode", mode);
+    navigate(`/search?${qs.toString()}`);
+  };
+
   // KPI 카드별 표시 문구/수치/톤을 한 번에 구성합니다.
   const kpis = [
     {
@@ -39,6 +49,7 @@ export default function DashboardKpi({
         </>
       ),
       tone: "indigo" as const,
+      onClick: () => goSearchWithMode("ongoing"),
     },
     {
       title: "2. D-7 임박",
@@ -51,6 +62,7 @@ export default function DashboardKpi({
         </>
       ),
       tone: "orange" as const,
+      onClick: () => goSearchWithMode("soon"),
     },
     {
       title: "3. 즐겨찾기",
@@ -63,6 +75,7 @@ export default function DashboardKpi({
         </>
       ),
       tone: "rose" as const,
+      onClick: () => goSearchWithMode("favorite"),
     },
     {
       title: "4. 마지막 동기화",
@@ -91,6 +104,7 @@ export default function DashboardKpi({
               hint={item.hint}
               tone={item.tone}
               chip={item.chip}
+              onClick={item.onClick}
             />
           </Col>
         ))}

@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Spinner } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import { useSearchParams } from "react-router-dom";
 import FilterPanel from "@/components/Search/FilterPanel";
 import ListPanel from "@/components/Search/ListPanel";
 import DetailPanel from "@/components/Search/DetailPanel";
 import { fetchSearchDetail, fetchSearchList, toggleFavorite } from "./search/api";
 import type { SearchDetailItem, SearchListItem, SearchStatusFilter } from "./search/types";
+import "react-toastify/dist/ReactToastify.css";
 import "./Search.css";
 
 function formatYmd(date: Date) {
@@ -17,29 +20,105 @@ function formatYmd(date: Date) {
 
 function getDefaultRange() {
   const from = new Date();
-  from.setMonth(from.getMonth() - 2);
+  from.setMonth(from.getMonth() - 12);
   const to = new Date();
-  to.setFullYear(to.getFullYear() + 1);
+  to.setMonth(to.getMonth() + 2);
   return { beginFrom: formatYmd(from), beginTo: formatYmd(to) };
 }
 
-export default function Search() {
-  const defaults = getDefaultRange();
+const LIST_PAGE_SIZE = 15;
+const VALID_STATUS: SearchStatusFilter[] = ["all", "접수예정", "접수중", "접수마감"];
 
-  const [q, setQ] = useState("");
-  const [onlySoon, setOnlySoon] = useState(true);
-  const [status, setStatus] = useState<SearchStatusFilter>("all");
-  const [beginFrom, setBeginFrom] = useState(defaults.beginFrom);
-  const [beginTo, setBeginTo] = useState(defaults.beginTo);
-  const [advancedOpen, setAdvancedOpen] = useState(true);
+function parseDashboardPreset(
+  searchParams: URLSearchParams,
+  defaults: { beginFrom: string; beginTo: string },
+) {
+  const from = searchParams.get("from");
+  const mode = searchParams.get("mode");
+  const rawStatus = searchParams.get("status");
+  const status = VALID_STATUS.includes(rawStatus as SearchStatusFilter)
+    ? (rawStatus as SearchStatusFilter)
+    : "all";
+  const keyword = (searchParams.get("keyword") ?? "").trim();
 
-  const [applied, setApplied] = useState({
-    keyword: "",
-    status: "all" as SearchStatusFilter,
-    onlySoon: true,
+  if (from !== "dashboard") {
+    return {
+      keyword: "",
+      status: "all" as SearchStatusFilter,
+      onlyOngoing: false,
+      onlySoon: true,
+      onlyFavorite: false,
+      beginFrom: defaults.beginFrom,
+      beginTo: defaults.beginTo,
+    };
+  }
+
+  if (mode === "favorite") {
+    return {
+      keyword,
+      status,
+      onlyOngoing: false,
+      onlySoon: false,
+      onlyFavorite: true,
+      beginFrom: defaults.beginFrom,
+      beginTo: defaults.beginTo,
+    };
+  }
+
+  if (mode === "soon") {
+    return {
+      keyword,
+      status,
+      onlyOngoing: false,
+      onlySoon: true,
+      onlyFavorite: false,
+      beginFrom: defaults.beginFrom,
+      beginTo: defaults.beginTo,
+    };
+  }
+
+  if (mode === "ongoing") {
+    return {
+      keyword,
+      status: "all" as SearchStatusFilter,
+      onlyOngoing: true,
+      onlySoon: false,
+      onlyFavorite: false,
+      beginFrom: defaults.beginFrom,
+      beginTo: defaults.beginTo,
+    };
+  }
+
+  return {
+    keyword,
+    status,
+    onlyOngoing: false,
+    onlySoon: false,
+    onlyFavorite: false,
     beginFrom: defaults.beginFrom,
     beginTo: defaults.beginTo,
-  });
+  };
+}
+
+export default function Search() {
+  const [searchParams] = useSearchParams();
+  const defaults = useMemo(() => getDefaultRange(), []);
+  const searchParamKey = searchParams.toString();
+  const preset = useMemo(
+    () => parseDashboardPreset(new URLSearchParams(searchParamKey), defaults),
+    [searchParamKey, defaults.beginFrom, defaults.beginTo],
+  );
+
+  const [q, setQ] = useState(preset.keyword);
+  const [onlyOngoing, setOnlyOngoing] = useState(preset.onlyOngoing);
+  const [onlySoon, setOnlySoon] = useState(preset.onlySoon);
+  const [onlyFavorite, setOnlyFavorite] = useState(preset.onlyFavorite);
+  const [status, setStatus] = useState<SearchStatusFilter>(preset.status);
+  const [beginFrom, setBeginFrom] = useState(preset.beginFrom);
+  const [beginTo, setBeginTo] = useState(preset.beginTo);
+  const [advancedOpen, setAdvancedOpen] = useState(true);
+
+  const [applied, setApplied] = useState(preset);
 
   const [rows, setRows] = useState<SearchListItem[]>([]);
   const [selectedId, setSelectedId] = useState("");
@@ -48,17 +127,40 @@ export default function Search() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(LIST_PAGE_SIZE);
 
   const selected = useMemo(() => rows.find((row) => row.id === selectedId), [rows, selectedId]);
+  const detailForPanel = useMemo(() => {
+    if (selectedDetail && selected?.apiId && selectedDetail.id === selected.apiId) return selectedDetail;
+    if (!selected) return undefined;
+    return {
+      id: selected.apiId || "-",
+      title: selected.title,
+      complex: selected.complex,
+      region: selected.region,
+      address: selected.region,
+      period: selected.period,
+      status: selected.status,
+      rawStatus: selected.status,
+      ddayText: selected.ddayText,
+      url: selected.url,
+      isFavorite: selected.favored,
+      announcementDateText: "-",
+    } as SearchDetailItem;
+  }, [selected, selectedDetail]);
 
   const appliedChips = useMemo(() => {
     const chips: string[] = [];
     if (applied.keyword.trim()) chips.push(`키워드: ${applied.keyword.trim()}`);
     chips.push(`상태: ${applied.status === "all" ? "전체" : applied.status}`);
     chips.push(`기간: ${applied.beginFrom} ~ ${applied.beginTo}`);
+    if (applied.onlyOngoing) chips.push("진행중(접수중/예정)");
     if (applied.onlySoon) chips.push("D-7 이내");
+    if (applied.onlyFavorite) chips.push("즐겨찾기만");
     return chips;
   }, [applied]);
+  const visibleRows = useMemo(() => rows.slice(0, visibleCount), [rows, visibleCount]);
+  const hasMoreRows = visibleCount < rows.length;
 
   const handleSearch = () => {
     if (beginFrom && beginTo && beginFrom > beginTo) {
@@ -66,8 +168,19 @@ export default function Search() {
       return;
     }
     setActionError(null);
-    setApplied({ keyword: q, status, onlySoon, beginFrom, beginTo });
+    setApplied({ keyword: q, status, onlyOngoing, onlySoon, onlyFavorite, beginFrom, beginTo });
   };
+
+  useEffect(() => {
+    setQ(preset.keyword);
+    setStatus(preset.status);
+    setOnlyOngoing(preset.onlyOngoing);
+    setOnlySoon(preset.onlySoon);
+    setOnlyFavorite(preset.onlyFavorite);
+    setBeginFrom(preset.beginFrom);
+    setBeginTo(preset.beginTo);
+    setApplied(preset);
+  }, [preset]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -77,6 +190,7 @@ export default function Search() {
     fetchSearchList(applied, abortController.signal)
       .then((list) => {
         setRows(list);
+        setVisibleCount(LIST_PAGE_SIZE);
         setSelectedId((prev) => {
           if (prev && list.some((row) => row.id === prev)) return prev;
           return list[0]?.id ?? "";
@@ -97,7 +211,8 @@ export default function Search() {
   }, [applied]);
 
   useEffect(() => {
-    if (!selectedId) {
+    const apiId = selected?.apiId;
+    if (!selectedId || !apiId) {
       setSelectedDetail(undefined);
       return;
     }
@@ -106,7 +221,7 @@ export default function Search() {
     setDetailLoading(true);
     setActionError(null);
 
-    fetchSearchDetail(selectedId, abortController.signal)
+    fetchSearchDetail(apiId, abortController.signal)
       .then((detail) => setSelectedDetail(detail))
       .catch((err) => {
         if (abortController.signal.aborted) return;
@@ -117,17 +232,87 @@ export default function Search() {
       });
 
     return () => abortController.abort();
-  }, [selectedId]);
+  }, [selectedId, selected?.apiId]);
 
   const handleToggleFavorite = async (row: SearchListItem) => {
     setActionError(null);
+    if (!row.apiId) {
+      setActionError("이 항목은 고유번호가 없어 즐겨찾기 처리를 할 수 없습니다.");
+      return;
+    }
     const nextFav = !row.favored;
 
     setRows((prev) => prev.map((item) => (item.id === row.id ? { ...item, favored: nextFav } : item)));
     setSelectedDetail((prev) => (prev && prev.id === row.id ? { ...prev, isFavorite: nextFav } : prev));
 
     try {
-      await toggleFavorite(row.id, row.favored);
+      await toggleFavorite(row.apiId, row.favored);
+      const toastId = toast(
+        ({ closeToast }) => (
+          <div className="search-favorite-toast-body">
+            <div className="search-favorite-toast-icon" aria-hidden="true">
+              {nextFav ? (
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M20 7L10 17L5 12"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M6 7H18"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M9 7V5.8C9 5.358 9.358 5 9.8 5H14.2C14.642 5 15 5.358 15 5.8V7"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M8 9V18C8 18.552 8.448 19 9 19H15C15.552 19 16 18.552 16 18V9"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              )}
+            </div>
+            <div className="search-favorite-toast-texts">
+              <div className="search-favorite-toast-title">{nextFav ? "Success" : "Delete"}</div>
+              <div className="search-favorite-toast-message">
+                {nextFav ? "즐겨찾기에 추가되었습니다." : "즐겨찾기에서 딜리트되었습니다."}
+              </div>
+              <div className="search-favorite-toast-meaning">
+                {nextFav
+                  ? "이 공고를 즐겨찾기 목록에서 빠르게 확인할 수 있습니다."
+                  : "이 공고는 즐겨찾기 목록에서 제거되었습니다."}
+              </div>
+            </div>
+            <button
+              type="button"
+              className="search-favorite-toast-close"
+              onClick={() => closeToast?.()}
+              aria-label="알림 닫기"
+            >
+              ×
+            </button>
+          </div>
+        ),
+        {
+          className: `search-favorite-toast is-${nextFav ? "success" : "delete"}`,
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeButton: false,
+        },
+      );
+      window.setTimeout(() => toast.dismiss(toastId), 2100);
     } catch (err) {
       setRows((prev) => prev.map((item) => (item.id === row.id ? { ...item, favored: row.favored } : item)));
       setSelectedDetail((prev) => (prev && prev.id === row.id ? { ...prev, isFavorite: row.favored } : prev));
@@ -137,6 +322,18 @@ export default function Search() {
 
   return (
     <div className="search-page">
+      <ToastContainer
+        position="top-right"
+        className="search-toast-container"
+        toastClassName="search-favorite-toast"
+        draggable={false}
+        closeOnClick
+        newestOnTop
+        autoClose={2000}
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
+      />
+
       <section className="search-hero panel-card">
         <h2>검색</h2>
 
@@ -177,6 +374,8 @@ export default function Search() {
           <FilterPanel
             onlySoon={onlySoon}
             setOnlySoon={setOnlySoon}
+            onlyFavorite={onlyFavorite}
+            setOnlyFavorite={setOnlyFavorite}
             beginFrom={beginFrom}
             setBeginFrom={setBeginFrom}
             beginTo={beginTo}
@@ -207,33 +406,17 @@ export default function Search() {
 
         <div className="search-main-grid">
           <ListPanel
-            rows={rows}
+            rows={visibleRows}
             selectedId={selectedId}
             setSelectedId={setSelectedId}
             onToggleFavorite={handleToggleFavorite}
+            hasMore={hasMoreRows}
+            onLoadMore={() => setVisibleCount((prev) => prev + LIST_PAGE_SIZE)}
+            totalCount={rows.length}
           />
 
           <DetailPanel
-            selected={
-              selectedDetail
-                ? selectedDetail
-                : selected
-                  ? {
-                      id: selected.id,
-                      title: selected.title,
-                      complex: selected.complex,
-                      region: selected.region,
-                      address: selected.region,
-                      period: selected.period,
-                      status: selected.status,
-                      rawStatus: selected.status,
-                      ddayText: selected.ddayText,
-                      url: selected.url,
-                      isFavorite: selected.favored,
-                      announcementDateText: "-",
-                    }
-                  : undefined
-            }
+            selected={detailForPanel}
             detailLoading={detailLoading}
             toggleFav={() => {
               if (selected) handleToggleFavorite(selected);

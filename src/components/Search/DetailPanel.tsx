@@ -1,6 +1,7 @@
 import { Spinner } from "react-bootstrap";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import type { SearchDetailItem } from "@/pages/search/types";
+import DetailMap from "./DetailMap";
 
 function RowItem({ label, value }: { label: string; value: string }) {
   return (
@@ -22,6 +23,12 @@ export default function DetailPanel({ selected, detailLoading, toggleFav }: Prop
     <section className="search-detail-card panel-card">
       <div className="search-detail-head">
         <h3>상세 정보</h3>
+        {detailLoading && selected ? (
+          <span className="search-detail-head-loading">
+            <Spinner animation="border" size="sm" />
+            업데이트 중
+          </span>
+        ) : null}
         {selected?.url ? (
           <a
             className="search-detail-link"
@@ -35,7 +42,7 @@ export default function DetailPanel({ selected, detailLoading, toggleFav }: Prop
         ) : null}
       </div>
 
-      {detailLoading ? (
+      {!selected && detailLoading ? (
         <div className="search-detail-loading">
           <Spinner animation="border" size="sm" />
           <span>상세 정보를 불러오는 중입니다.</span>
@@ -58,6 +65,7 @@ export default function DetailPanel({ selected, detailLoading, toggleFav }: Prop
           <button className="btn btn-purple search-detail-fav" type="button" onClick={() => toggleFav(selected.id)}>
             {selected.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
           </button>
+          <DetailMap selected={selected} />
         </>
       )}
     </section>

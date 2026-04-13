@@ -8,6 +8,7 @@ export default function KpiCard({
   hint,
   chip,
   tone,
+  onClick,
 }: {
   title: string;
   value: string;
@@ -15,10 +16,24 @@ export default function KpiCard({
   hint: string;
   chip?: ReactNode;
   tone?: "indigo" | "orange" | "rose" | "emerald";
+  onClick?: () => void;
 }) {
   return (
     // KPI 단일 카드: 타이틀/값/아이콘/보조지표(chip)를 한 카드로 묶어 렌더링합니다.
-    <Card className={`kpi-card tone-${tone ?? "indigo"}`}>
+    <Card
+      className={`kpi-card tone-${tone ?? "indigo"}${onClick ? " is-clickable" : ""}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (!onClick) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      aria-label={onClick ? `${title} 조건으로 조회 이동` : undefined}
+    >
       <Card.Body>
         <div className="kpi-head">
           <div className="kpi-title">{title}</div>

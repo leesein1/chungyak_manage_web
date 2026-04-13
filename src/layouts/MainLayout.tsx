@@ -1,17 +1,24 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { FaTachometerAlt, FaSearch, FaCog } from "react-icons/fa";
 import SideItem from "@/components/common/Sidebar";
 
 export default function AppLayout() {
+  const navigate = useNavigate();
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <div className="sidebar-brand">
+        <button
+          type="button"
+          className="sidebar-brand sidebar-brand-btn"
+          onClick={() => navigate("/dashboard")}
+          aria-label="메인 대시보드로 이동"
+        >
           <div className="sidebar-brand-badge">
             <img src="/favicon.svg" alt="우리청약노트 로고" />
           </div>
           <span>우리청약노트</span>
-        </div>
+        </button>
 
         <nav className="sidebar-nav">
           <SideItem to="/dashboard" icon={<FaTachometerAlt />} label="메인 관제" end />
@@ -29,7 +36,7 @@ export default function AppLayout() {
       </aside>
 
       <div className="main">
-        <Topbar />
+        <Topbar onGoDashboard={() => navigate("/dashboard")} />
         <main className="content">
           <Outlet />
         </main>
@@ -38,10 +45,17 @@ export default function AppLayout() {
   );
 }
 
-function Topbar() {
+function Topbar({ onGoDashboard }: { onGoDashboard: () => void }) {
   return (
     <header className="topbar" style={{ marginBottom: 10 }}>
-      <div className="topbar-title">우리청약노트</div>
+      <button
+        type="button"
+        className="topbar-title topbar-title-btn"
+        onClick={onGoDashboard}
+        aria-label="메인 대시보드로 이동"
+      >
+        우리청약노트
+      </button>
     </header>
   );
 }

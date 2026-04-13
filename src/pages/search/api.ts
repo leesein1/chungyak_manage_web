@@ -84,8 +84,13 @@ async function fetchJson<T>(url: string, signal: AbortSignal, label: string): Pr
   return (await res.json()) as T;
 }
 
-function mapListRow(raw: Record<string, unknown>): SearchListItem {
-  const id = getText(raw, ["고유번호", "pblancId", "PBLANC_ID"]);
+function getPrimaryId(raw: Record<string, unknown>) {
+  return getText(raw, ["고유번호", "pblancId", "PBLANC_ID", "id"]);
+}
+
+function mapListRow(raw: Record<string, unknown>, index: number): SearchListItem {
+  const apiId = getPrimaryId(raw);
+  const order = getText(raw, ["순서", "order", "NO"]);
   const title = getText(raw, ["공고명", "noticeName", "PBLANC_NM"]);
   const complex = getText(raw, ["단지명", "complexName", "HSMP_NM"]);
   const status = getText(raw, ["상태", "status", "rawStatus", "STTUS_NM"]);
@@ -100,7 +105,8 @@ function mapListRow(raw: Record<string, unknown>): SearchListItem {
   const ddayValue = parseDday(ddaySource);
 
   return {
-    id: id || crypto.randomUUID(),
+    id: `${apiId || "noid"}:${order || "row"}:${index}`,
+    apiId,
     title: title || "공고명 없음",
     complex: complex || "단지명 없음",
     region: region || "지역 정보 없음",
@@ -114,14 +120,15 @@ function mapListRow(raw: Record<string, unknown>): SearchListItem {
 }
 
 function mapDetail(raw: Record<string, unknown>): SearchDetailItem {
-  const mapped = mapListRow(raw);
+  const mapped = mapListRow(raw, 0);
+  const apiId = getPrimaryId(raw);
   const address = getText(raw, ["주소", "address", "FULL_ADRES"]);
   const announcementDateText = formatDate(
     getText(raw, ["공고일", "announcementDate", "RCRIT_PBLANC_DE"])
   );
 
   return {
-    id: mapped.id,
+    id: apiId || mapped.apiId || "-",
     title: mapped.title,
     complex: mapped.complex,
     region: mapped.region,
@@ -149,9 +156,19 @@ export async function fetchSearchList(params: SearchFilterParams, signal: AbortS
     "검색 목록 조회"
   );
 
-  return rows
+  const mapped = rows
     .filter((row): row is Record<string, unknown> => typeof row === "object" && row !== null)
-    .map(mapListRow);
+    .map((row, idx) => mapListRow(row, idx));
+
+  if (params.onlyFavorite) {
+    return mapped.filter((row) => row.favored);
+  }
+
+  if (params.onlyOngoing) {
+    return mapped.filter((row) => /접수중|접수예정/.test(row.status));
+  }
+
+  return mapped;
 }
 
 export async function fetchSearchDetail(pblancId: string, signal: AbortSignal) {

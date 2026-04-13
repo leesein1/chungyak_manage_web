@@ -3,6 +3,8 @@ import type { SearchStatusFilter } from "@/pages/search/types";
 type Props = {
   onlySoon: boolean;
   setOnlySoon: (v: boolean) => void;
+  onlyFavorite: boolean;
+  setOnlyFavorite: (v: boolean) => void;
   beginFrom: string;
   setBeginFrom: (v: string) => void;
   beginTo: string;
@@ -14,6 +16,8 @@ type Props = {
 export default function FilterPanel({
   onlySoon,
   setOnlySoon,
+  onlyFavorite,
+  setOnlyFavorite,
   beginFrom,
   setBeginFrom,
   beginTo,
@@ -74,6 +78,14 @@ export default function FilterPanel({
           <label className="search-check">
             <input type="checkbox" checked={onlySoon} onChange={(e) => setOnlySoon(e.target.checked)} />
             <span>D-7 이내만 보기</span>
+          </label>
+          <label className="search-check">
+            <input
+              type="checkbox"
+              checked={onlyFavorite}
+              onChange={(e) => setOnlyFavorite(e.target.checked)}
+            />
+            <span>즐겨찾기만 보기</span>
           </label>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./DashboardCalendar.css";
 import KakaoMapPanel from "./KakaoMapPanel";
 
@@ -36,6 +37,7 @@ export default function DashboardCalendar({
   showMapToggle = true,
   onSelectDate,
 }: Props) {
+  const navigate = useNavigate();
   const today = new Date();
   const [viewMonth, setViewMonth] = useState<Date>(
     startOfMonth(initialMonth ?? today),
@@ -344,7 +346,11 @@ export default function DashboardCalendar({
         )}
 
         <div className="right-actions">
-          <button className="outline-btn" type="button">
+          <button
+            className="outline-btn"
+            type="button"
+            onClick={() => navigate("/search?from=dashboard&mode=all")}
+          >
             모집공고 전체보기
           </button>
         </div>
