@@ -119,6 +119,7 @@ export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
         // 지도 패널에서 "선택 날짜 기준 단계"를 설명하기 위한 메타
         status,
         address,
+        linkUrl: row.url,
       });
     }
 
@@ -132,6 +133,7 @@ export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
         badgeTone: "red",
         status,
         address,
+        linkUrl: row.url,
       });
     }
 
@@ -145,6 +147,7 @@ export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
         badgeTone: "orange",
         status,
         address,
+        linkUrl: row.url,
       });
     }
   });

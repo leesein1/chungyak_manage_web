@@ -31,6 +31,12 @@ declare global {
 const DEFAULT_CENTER = { lat: 37.4563, lng: 126.7052 }; // 인천시청 근처
 const SDK_ID = "kakao-map-sdk";
 
+const MARKER_COLOR_BY_TYPE: Record<string, string> = {
+  ANNOUNCE: "#2563eb",
+  RECEIVE: "#ef4444",
+  RESULT: "#f59e0b",
+};
+
 let sdkPromise: Promise<any> | null = null;
 
 function loadKakaoSdk(appKey: string) {
@@ -67,6 +73,24 @@ function loadKakaoSdk(appKey: string) {
   });
 
   return sdkPromise;
+}
+
+function buildMarkerSvgDataUri(color: string) {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48">
+      <path d="M18 2C9.715 2 3 8.715 3 17c0 10.343 11.476 23.36 14.293 26.429a1 1 0 0 0 1.414 0C21.524 40.36 33 27.343 33 17 33 8.715 26.285 2 18 2z" fill="${color}"/>
+      <circle cx="18" cy="17" r="7" fill="#ffffff"/>
+    </svg>
+  `.trim();
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function getMarkerImage(kakao: any, eventType?: "ANNOUNCE" | "RECEIVE" | "RESULT") {
+  const color = MARKER_COLOR_BY_TYPE[eventType ?? "ANNOUNCE"] ?? MARKER_COLOR_BY_TYPE.ANNOUNCE;
+  const src = buildMarkerSvgDataUri(color);
+  const size = new kakao.maps.Size(30, 40);
+  const offset = new kakao.maps.Point(15, 40);
+  return new kakao.maps.MarkerImage(src, size, { offset });
 }
 
 export default function KakaoMapPanel({
@@ -192,6 +216,7 @@ export default function KakaoMapPanel({
             map,
             position: coords,
             title: point.title,
+            image: getMarkerImage(kakao, point.eventType),
           });
 
           markerByIdRef.current.set(point.id, marker);

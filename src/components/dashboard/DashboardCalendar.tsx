@@ -12,6 +12,7 @@ export type CalendarEvent = {
   badgeTone?: "green" | "red" | "gray" | "purple" | "blue" | "orange";
   status?: string;
   address?: string;
+  linkUrl?: string;
 };
 
 type Props = {
@@ -92,6 +93,7 @@ export default function DashboardCalendar({
       eventType: event.type,
       eventPhaseLabel: TYPE_LABEL[event.type],
       eventBadgeLabel: event.badgeText ?? defaultBadgeByType(event.type),
+      linkUrl: event.linkUrl,
     }));
   }, [selectedEvents]);
 
@@ -108,6 +110,11 @@ export default function DashboardCalendar({
     const sd = stripTime(d);
     setSelectedDate(sd);
     onSelectDate?.(sd);
+  };
+
+  const handleOpenMyHome = (url?: string) => {
+    const target = url && url.trim() ? url : "https://www.myhome.go.kr/";
+    window.open(target, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -219,6 +226,8 @@ export default function DashboardCalendar({
                       type="button"
                       className={`event-item event-item-button ${selectedMapPointId === item.id ? "is-active" : ""}`}
                       onClick={() => setSelectedMapPointId(item.id)}
+                      onDoubleClick={() => handleOpenMyHome(item.linkUrl)}
+                      title="더블클릭하면 모집공고 페이지로 이동합니다."
                     >
                       <div className={`event-badge tone-${toneByType(item.eventType)}`}>
                         {item.eventBadgeLabel}
@@ -249,12 +258,18 @@ export default function DashboardCalendar({
                 <div className="empty">선택한 날짜에 표시할 항목이 없습니다.</div>
               ) : (
                 selectedEvents.map((e, idx) => (
-                  <div key={`${e.date}-${e.type}-${idx}`} className="event-item">
+                  <button
+                    key={`${e.date}-${e.type}-${idx}`}
+                    type="button"
+                    className="event-item event-item-button"
+                    onDoubleClick={() => handleOpenMyHome(e.linkUrl)}
+                    title="더블클릭하면 모집공고 페이지로 이동합니다."
+                  >
                     <div className={"event-badge tone-" + (e.badgeTone ?? toneByType(e.type))}>
                       {e.badgeText ?? defaultBadgeByType(e.type)}
                     </div>
                     <div className="event-title">{e.title}</div>
-                  </div>
+                  </button>
                 ))
               )}
             </div>
