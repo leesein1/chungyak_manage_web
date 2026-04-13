@@ -1,83 +1,65 @@
-/**
- * DetailPanel
- * 용도: `Search` 페이지에서 선택된 공고의 상세 정보를 보여주는 패널 컴포넌트입니다.
- * 위치: `src/pages/Search.tsx`의 상세(우측) 패널로 사용됩니다.
- */
-
-import { Card } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import type { SearchDetailItem } from "@/pages/search/types";
 
-type RowItem = {
-  id: string;
-  status: string;
-  title: string;
-  complex: string;
-  region: string;
-  period: string;
-  dday: number;
-  url: string;
-};
-
-function Info({ label, value }: { label: string; value: string }) {
+function RowItem({ label, value }: { label: string; value: string }) {
   return (
-    <div
-      className="p-2"
-      style={{ border: "1px solid #e6e7f2", borderRadius: 14 }}
-    >
-      <div className="small text-muted">{label}</div>
-      <div className="font-weight-bold" style={{ lineHeight: 1.2 }}>
-        {value}
-      </div>
+    <div className="search-detail-row">
+      <dt>{label}</dt>
+      <dd>{value || "-"}</dd>
     </div>
   );
 }
 
 type Props = {
-  selected?: RowItem;
-  fav: Record<string, boolean>;
+  selected?: SearchDetailItem;
+  detailLoading: boolean;
   toggleFav: (id: string) => void;
 };
 
-export default function DetailPanel({ selected, fav, toggleFav }: Props) {
+export default function DetailPanel({ selected, detailLoading, toggleFav }: Props) {
   return (
-    <Card className="panel-card">
-      <Card.Body>
-        <div className="d-flex justify-content-between align-items-center mb-2">
-          <h5 className="mb-0">상세</h5>
-          {selected && (
-            <a
-              className="btn btn-sm btn-outline-secondary"
-              href={selected.url}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <FaExternalLinkAlt />
-            </a>
-          )}
+    <section className="search-detail-card panel-card">
+      <div className="search-detail-head">
+        <h3>상세 정보</h3>
+        {selected?.url ? (
+          <a
+            className="search-detail-link"
+            href={selected.url}
+            target="_blank"
+            rel="noreferrer"
+            title="원문 보기"
+          >
+            <FaExternalLinkAlt />
+          </a>
+        ) : null}
+      </div>
+
+      {detailLoading ? (
+        <div className="search-detail-loading">
+          <Spinner animation="border" size="sm" />
+          <span>상세 정보를 불러오는 중입니다.</span>
         </div>
-
-        {!selected ? (
-          <div className="text-muted">선택된 공고가 없습니다.</div>
-        ) : (
-          <div className="d-flex flex-column" style={{ gap: 10 }}>
-            <Info label="고유번호" value={selected.id} />
-            <Info label="상태" value={selected.status} />
-            <Info label="공고명" value={selected.title} />
-            <Info label="단지명" value={selected.complex} />
-            <Info label="지역" value={selected.region} />
-            <Info label="접수기간" value={selected.period} />
-            <Info label="D-day" value={`D-${selected.dday}`} />
-
-            <button
-              className="btn btn-purple btn-block"
-              type="button"
-              onClick={() => selected && toggleFav(selected.id)}
-            >
-              {selected && fav[selected.id] ? "즐겨찾기 해제" : "즐겨찾기 추가"}
-            </button>
-          </div>
-        )}
-      </Card.Body>
-    </Card>
+      ) : !selected ? (
+        <div className="search-empty">선택된 공고가 없습니다.</div>
+      ) : (
+        <>
+          <dl className="search-detail-list">
+            <RowItem label="고유번호" value={selected.id} />
+            <RowItem label="공고명" value={selected.title} />
+            <RowItem label="단지명" value={selected.complex} />
+            <RowItem label="상태" value={selected.status} />
+            <RowItem label="지역" value={selected.region} />
+            <RowItem label="주소" value={selected.address} />
+            <RowItem label="접수기간" value={selected.period} />
+            <RowItem label="공고일" value={selected.announcementDateText} />
+            <RowItem label="D-day" value={selected.ddayText} />
+          </dl>
+          <button className="btn btn-purple search-detail-fav" type="button" onClick={() => toggleFav(selected.id)}>
+            {selected.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+          </button>
+        </>
+      )}
+    </section>
   );
 }

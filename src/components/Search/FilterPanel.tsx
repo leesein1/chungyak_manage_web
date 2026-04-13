@@ -1,76 +1,80 @@
-/**
- * FilterPanel
- * 용도: `Search` 페이지의 검색/필터 입력 UI를 분리한 컴포넌트입니다.
- * 위치: `src/pages/Search.tsx`에서 사용됩니다.
- */
-
-import { Col, Form, Row } from "react-bootstrap";
-import { FaSearch } from "react-icons/fa";
+import type { SearchStatusFilter } from "@/pages/search/types";
 
 type Props = {
-  q: string;
-  setQ: (v: string) => void;
   onlySoon: boolean;
   setOnlySoon: (v: boolean) => void;
-  status: string;
-  setStatus: (v: string) => void;
+  beginFrom: string;
+  setBeginFrom: (v: string) => void;
+  beginTo: string;
+  setBeginTo: (v: string) => void;
+  status: SearchStatusFilter;
+  setStatus: (v: SearchStatusFilter) => void;
 };
 
 export default function FilterPanel({
-  q,
-  setQ,
   onlySoon,
   setOnlySoon,
+  beginFrom,
+  setBeginFrom,
+  beginTo,
+  setBeginTo,
   status,
   setStatus,
 }: Props) {
   return (
-    <div>
-      <div className="page-title">
-        조회
-        <div className="page-sub">검색/필터/목록 + 상세 패널(샘플 UI)</div>
+    <div className="search-advanced">
+      <div className="search-advanced-title">상세 조건</div>
+
+      <div className="search-advanced-row">
+        <div className="search-advanced-label">검색기간</div>
+        <div className="search-advanced-controls">
+          <input type="date" value={beginFrom} onChange={(e) => setBeginFrom(e.target.value)} />
+          <span className="search-sep">~</span>
+          <input type="date" value={beginTo} onChange={(e) => setBeginTo(e.target.value)} />
+        </div>
       </div>
 
-      <div className="panel-card mb-3 card">
-        <div className="card-body">
-          <Row className="align-items-end">
-            <Col md={6} className="mb-2">
-              <Form.Label>키워드</Form.Label>
-              <div className="d-flex" style={{ gap: 8 }}>
-                <Form.Control
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="공고명/단지/지역"
-                />
-                <button className="btn btn-purple" type="button">
-                  <FaSearch />
-                </button>
-              </div>
-            </Col>
-            <Col md={3} className="mb-2">
-              <Form.Label>상태</Form.Label>
-              <Form.Control
-                as="select"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option value="all">전체</option>
-                <option value="예정">예정</option>
-                <option value="접수중">접수중</option>
-                <option value="마감">마감</option>
-              </Form.Control>
-            </Col>
-            <Col md={3} className="mb-2">
-              <Form.Check
-                type="checkbox"
-                id="onlySoon"
-                label="D-7 이내만"
-                checked={onlySoon}
-                onChange={(e) => setOnlySoon(e.target.checked)}
-                style={{ marginTop: 30 }}
-              />
-            </Col>
-          </Row>
+      <div className="search-advanced-row">
+        <div className="search-advanced-label">검색상태</div>
+        <div className="search-advanced-controls">
+          <label className="search-radio">
+            <input type="radio" checked={status === "all"} onChange={() => setStatus("all")} />
+            <span>전체</span>
+          </label>
+          <label className="search-radio">
+            <input
+              type="radio"
+              checked={status === "접수예정"}
+              onChange={() => setStatus("접수예정")}
+            />
+            <span>접수예정</span>
+          </label>
+          <label className="search-radio">
+            <input
+              type="radio"
+              checked={status === "접수중"}
+              onChange={() => setStatus("접수중")}
+            />
+            <span>접수중</span>
+          </label>
+          <label className="search-radio">
+            <input
+              type="radio"
+              checked={status === "접수마감"}
+              onChange={() => setStatus("접수마감")}
+            />
+            <span>접수마감</span>
+          </label>
+        </div>
+      </div>
+
+      <div className="search-advanced-row">
+        <div className="search-advanced-label">검색옵션</div>
+        <div className="search-advanced-controls">
+          <label className="search-check">
+            <input type="checkbox" checked={onlySoon} onChange={(e) => setOnlySoon(e.target.checked)} />
+            <span>D-7 이내만 보기</span>
+          </label>
         </div>
       </div>
     </div>
