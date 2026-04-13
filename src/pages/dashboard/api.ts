@@ -72,13 +72,15 @@ function getValue(raw: Record<string, unknown>, keys: string[]) {
 function normalizeRcvhomeRow(raw: Record<string, unknown>): ApiRcvhome {
   const beginDate = toText(getValue(raw, [K_BEGIN, "BEGIN_DE", "beginDe", "beginDate"]));
   const endDate = toText(getValue(raw, [K_END, "END_DE", "endDe", "endDate"]));
+  const statusText = toText(getValue(raw, [K_STATUS, "STTUS_NM", "sttusNm"]));
+  const addressText = toText(getValue(raw, [K_ADDR, "FULL_ADRES", "fullAdres"]));
   const period = toText(getValue(raw, [K_PERIOD, "period"])) ?? (beginDate && endDate ? `${beginDate} ~ ${endDate}` : undefined);
 
   return {
     [K_ID]: toText(getValue(raw, [K_ID, "PBLANC_ID", "pblancId"])),
     [K_TITLE]: toText(getValue(raw, [K_TITLE, "PBLANC_NM", "pblancNm"])),
     [K_COMPLEX]: toText(getValue(raw, [K_COMPLEX, "HSMP_NM", "hsmpNm"])),
-    [K_STATUS]: toText(getValue(raw, [K_STATUS, "STTUS_NM", "sttusNm"])),
+    [K_STATUS]: statusText,
     [K_NOTICE_DATE]: toText(
       getValue(raw, [K_NOTICE_DATE, K_ANNOUNCE, K_RECRUIT_ANNOUNCE, "RCRIT_PBLANC_DE", "rcritPblancDe"])
     ),
@@ -92,10 +94,12 @@ function normalizeRcvhomeRow(raw: Record<string, unknown>): ApiRcvhome {
     [K_BEGIN]: beginDate,
     [K_END]: endDate,
     [K_PERIOD]: period,
-    [K_ADDR]: toText(getValue(raw, [K_ADDR, "FULL_ADRES", "fullAdres"])),
+    [K_ADDR]: addressText,
     [K_DDAY]: toText(getValue(raw, [K_DDAY, "dday", "D_DAY"])),
     url: toText(getValue(raw, ["url", "URL"])),
     [K_FAVORITE]: toBool(getValue(raw, [K_FAVORITE, "favorite", "isFavorite"])),
+    statusText,
+    addressText,
   };
 }
 

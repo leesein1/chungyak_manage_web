@@ -1,4 +1,4 @@
-﻿import { FaArrowUp, FaCheckCircle, FaClock } from "react-icons/fa";
+import { FaArrowUp, FaCheckCircle, FaClock } from "react-icons/fa";
 import HeroArt from "./HeroArt";
 
 type Props = {

@@ -16,6 +16,8 @@ export type ApiRcvhome = {
   "남은일수"?: string;
   url?: string;
   "즐겨찾기"?: boolean;
+  statusText?: string;
+  addressText?: string;
 };
 
 export type ScheduleLastResponse = {

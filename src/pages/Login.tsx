@@ -20,13 +20,13 @@ export default function Login() {
 
     // TODO: API 로그인 연동
     // 지금은 성공했다고 가정
-    navigate("/dashboard"); // 로그인 성공 후 메인관제페이지
+    navigate("/dashboard"); // 로그인 성공 후 메인 관제 페이지
   };
 
   return (
     <div className="login-wrapper">
       <div className="login-card">
-        <h2 className="title">청약알리미</h2>
+        <h2 className="title">우리청약노트</h2>
         <p className="subtitle">관리자 로그인</p>
 
         <form onSubmit={onSubmit}>
@@ -58,7 +58,7 @@ export default function Login() {
         </form>
 
         <div className="login-footer">
-          <span>ⓒ Chungyak Manager</span>
+          <span>© 우리청약노트</span>
         </div>
       </div>
     </div>

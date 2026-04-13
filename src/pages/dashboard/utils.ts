@@ -7,7 +7,6 @@ import type {
   UpdateItem,
 } from "./types";
 
-// ISO 문자열을 yyyy-mm-dd 포맷으로 변환합니다.
 function toIsoDate(value?: string) {
   if (!value) return "";
   const trimmed = value.trim();
@@ -19,6 +18,7 @@ function toIsoDate(value?: string) {
     const m = Number(ymd.slice(4, 6));
     const d = Number(ymd.slice(6, 8));
     const date = new Date(y, m - 1, d);
+
     if (
       !Number.isNaN(date.getTime()) &&
       date.getFullYear() === y &&
@@ -38,7 +38,6 @@ function toIsoDate(value?: string) {
   return `${y}-${m}-${d}`;
 }
 
-// "D-3", "마감" 같은 문자열을 숫자 형태의 D-day로 변환합니다.
 function parseDday(text?: string) {
   if (!text) return 999;
 
@@ -48,7 +47,6 @@ function parseDday(text?: string) {
   return 999;
 }
 
-// 서버 시간 문자열을 현재 기준 상대 시간 텍스트로 변환합니다.
 export function formatRelativeTime(iso?: string | null) {
   if (!iso) return "정보 없음";
 
@@ -67,7 +65,6 @@ export function formatRelativeTime(iso?: string | null) {
   return `${diffDay}일 전`;
 }
 
-// 대시보드 조회에 필요한 기본 기간 파라미터를 생성합니다.
 export function buildDateRangeQuery() {
   const from = new Date();
   from.setDate(from.getDate() - 30);
@@ -81,7 +78,6 @@ export function buildDateRangeQuery() {
   return qs.toString();
 }
 
-// API 한 건을 마감 임박 테이블에서 쓰는 ViewModel로 변환합니다.
 export function toSoonItem(row: ApiRcvhome): SoonItem {
   const rcritPblancDe = toIsoDate(
     row["공고일"] ?? row["청약공고일"] ?? row["모집공고일"] ?? row.RCRIT_PBLANC_DE
@@ -92,18 +88,20 @@ export function toSoonItem(row: ApiRcvhome): SoonItem {
     dday: parseDday(row["남은일수"]),
     title: row["공고명"] ?? "공고명 없음",
     RCRIT_PBLANC_DE: rcritPblancDe || "-",
-    region: row["주소"]?.trim() || "지역 정보 없음",
+    region: (row.addressText ?? row["주소"] ?? "").trim() || "지역 정보 없음",
     period: row["접수기간"] ?? "일정 정보 없음",
-    status: row["상태"] ?? "상태 미상",
+    status: row.statusText ?? row["상태"] ?? "상태 미상",
   };
 }
 
-// 공고 목록에서 캘린더에 찍을 접수 시작/마감 이벤트를 만듭니다.
 export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
   const map = new Map<string, CalendarEvent>();
 
-  rows.slice(0, 20).forEach((row) => {
+  // 지도/달력 패널 성능을 위해 상위 일부만 이벤트로 구성
+  rows.slice(0, 40).forEach((row) => {
     const title = row["공고명"] ?? "공고";
+    const status = row.statusText ?? row["상태"];
+    const address = row.addressText ?? row["주소"];
     const announceDate = toIsoDate(
       row["공고일"] ?? row["청약공고일"] ?? row["모집공고일"] ?? row.RCRIT_PBLANC_DE
     );
@@ -118,6 +116,9 @@ export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
         title: `${title} 모집 공고`,
         badgeText: "공고",
         badgeTone: "blue",
+        // 지도 패널에서 "선택 날짜 기준 단계"를 설명하기 위한 메타
+        status,
+        address,
       });
     }
 
@@ -129,6 +130,8 @@ export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
         title: `${title} 접수 시작`,
         badgeText: "접수",
         badgeTone: "red",
+        status,
+        address,
       });
     }
 
@@ -140,6 +143,8 @@ export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
         title: `${title} 접수 마감`,
         badgeText: "마감",
         badgeTone: "orange",
+        status,
+        address,
       });
     }
   });
@@ -147,7 +152,6 @@ export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
   return Array.from(map.values());
 }
 
-// 최근 업데이트 카드에 들어갈 메시지를 구성합니다.
 export function buildUpdates(
   scheduleLast: ScheduleLastResponse,
   favoriteCount: number,
@@ -176,7 +180,6 @@ export function buildUpdates(
   ];
 }
 
-// API 원본 응답들을 대시보드 화면 상태 형태로 합칩니다.
 export function buildDashboardStateFromApi(
   allRows: ApiRcvhome[],
   deadlineRows: ApiRcvhome[],
@@ -184,7 +187,7 @@ export function buildDashboardStateFromApi(
   scheduleLast: ScheduleLastResponse
 ): DashboardState {
   const ongoingCount = allRows.filter((row) => {
-    const status = row["상태"] ?? "";
+    const status = row.statusText ?? row["상태"] ?? "";
     return status.includes("접수중") || status.includes("접수예정");
   }).length;
 

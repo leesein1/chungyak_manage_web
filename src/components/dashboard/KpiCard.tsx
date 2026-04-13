@@ -1,4 +1,4 @@
-﻿import type { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Card } from "react-bootstrap";
 
 export default function KpiCard({

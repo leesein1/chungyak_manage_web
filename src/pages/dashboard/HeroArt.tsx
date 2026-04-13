@@ -1,4 +1,4 @@
-﻿// 히어로 오른쪽에 배치되는 장식용 SVG 컴포넌트입니다.
+// 히어로 오른쪽에 배치되는 장식용 SVG 컴포넌트입니다.
 export default function HeroArt() {
   return (
     <svg

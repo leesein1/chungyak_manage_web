@@ -35,6 +35,13 @@
   font-weight: 900;
 }
 
+.sidebar-brand-badge img {
+  width: 20px;
+  height: 20px;
+  display: block;
+  filter: brightness(0) invert(1);
+}
+
 .sidebar-nav {
   padding: 12px;
   display: flex;

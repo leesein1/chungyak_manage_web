@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import "./DashboardCalendar.css";
+import KakaoMapPanel from "./KakaoMapPanel";
 
 export type CalendarEventType = "ANNOUNCE" | "RECEIVE" | "RESULT";
 
@@ -9,6 +10,8 @@ export type CalendarEvent = {
   title: string;
   badgeText?: string;
   badgeTone?: "green" | "red" | "gray" | "purple" | "blue" | "orange";
+  status?: string;
+  address?: string;
 };
 
 type Props = {
@@ -33,13 +36,11 @@ export default function DashboardCalendar({
   onSelectDate,
 }: Props) {
   const today = new Date();
-  const [viewMonth, setViewMonth] = useState<Date>(
-    startOfMonth(initialMonth ?? today)
-  );
+  const [viewMonth, setViewMonth] = useState<Date>(startOfMonth(initialMonth ?? today));
   const [selectedDate, setSelectedDate] = useState<Date>(stripTime(today));
-  const [activeTypes, setActiveTypes] = useState<
-    Record<CalendarEventType, boolean>
-  >({
+  const [viewMode, setViewMode] = useState<"calendar" | "map">("calendar");
+  const [selectedMapPointId, setSelectedMapPointId] = useState("");
+  const [activeTypes, setActiveTypes] = useState<Record<CalendarEventType, boolean>>({
     ANNOUNCE: true,
     RECEIVE: true,
     RESULT: true,
@@ -72,13 +73,36 @@ export default function DashboardCalendar({
       .sort((a, b) => a.type.localeCompare(b.type));
   }, [events, selectedKey, activeTypes]);
 
-  const headerTitle = `${viewMonth.getFullYear()}년 ${String(
-    viewMonth.getMonth() + 1
-  ).padStart(2, "0")}월`;
+  const mapPoints = useMemo(() => {
+    // 지도는 "진행/예정" 우선으로 보여주되, 없으면 선택일 전체 이벤트를 fallback으로 사용
+    // (빈 지도로 보이는 상황을 줄이기 위한 UX 보강)
+    const isProgressOrPlanned = (event: CalendarEvent) => {
+      const source = `${event.status ?? ""} ${event.badgeText ?? ""} ${event.title}`;
+      return /(접수중|접수예정|진행중|예정)/.test(source);
+    };
 
-  const rightTitle = `${selectedDate.getFullYear()}년 ${
-    selectedDate.getMonth() + 1
-  }월 ${selectedDate.getDate()}일 청약공고`;
+    const progressOrPlanned = selectedEvents.filter(isProgressOrPlanned);
+    const baseEvents = progressOrPlanned.length > 0 ? progressOrPlanned : selectedEvents;
+
+    return baseEvents.map((event, idx) => ({
+      id: `${event.date}-${event.type}-${idx}`,
+      title: event.title,
+      address: (event.address && event.address.trim()) || event.title,
+      status: event.status ?? event.badgeText,
+      eventType: event.type,
+      eventPhaseLabel: TYPE_LABEL[event.type],
+      eventBadgeLabel: event.badgeText ?? defaultBadgeByType(event.type),
+    }));
+  }, [selectedEvents]);
+
+  useEffect(() => {
+    // 날짜/필터가 바뀌면 지도 선택도 첫 항목으로 리셋해 UI 상태를 일치시킨다.
+    setSelectedMapPointId(mapPoints[0]?.id ?? "");
+  }, [mapPoints]);
+
+  const headerTitle = `${viewMonth.getFullYear()}년 ${String(viewMonth.getMonth() + 1).padStart(2, "0")}월`;
+
+  const rightTitle = `${selectedDate.getFullYear()}년 ${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일 청약공고`;
 
   const handlePickDate = (d: Date) => {
     const sd = stripTime(d);
@@ -90,41 +114,42 @@ export default function DashboardCalendar({
     <div className="cal-wrap">
       <div className="cal-left">
         <div className="cal-top">
-          <div className="cal-top-title">
-            전국 공공주택 모집공고 달력으로 확인하기
-          </div>
+          <div className="cal-top-title">전국 공공주택 모집공고 달력으로 확인하기</div>
 
           {showMapToggle && (
-            <div className="cal-toggle">
-              <button className="toggle-btn">지도</button>
-              <button className="toggle-btn toggle-active">달력</button>
+            <div className="cal-toggle" data-mode={viewMode}>
+              <span className="cal-toggle-thumb" aria-hidden="true" />
+              <button
+                className={`toggle-btn ${viewMode === "map" ? "toggle-active" : ""}`}
+                type="button"
+                onClick={() => setViewMode("map")}
+              >
+                지도
+              </button>
+              <button
+                className={`toggle-btn ${viewMode === "calendar" ? "toggle-active" : ""}`}
+                type="button"
+                onClick={() => setViewMode("calendar")}
+              >
+                달력
+              </button>
             </div>
           )}
         </div>
 
         <div className="cal-month-nav">
-          <button
-            className="nav-btn"
-            onClick={() => setViewMonth(addMonths(viewMonth, -1))}
-            aria-label="prev month"
-          >
-            ‹
+          <button className="nav-btn" onClick={() => setViewMonth(addMonths(viewMonth, -1))} aria-label="prev month">
+            ←
           </button>
           <div className="month-title">{headerTitle}</div>
-          <button
-            className="nav-btn"
-            onClick={() => setViewMonth(addMonths(viewMonth, 1))}
-            aria-label="next month"
-          >
-            ›
+          <button className="nav-btn" onClick={() => setViewMonth(addMonths(viewMonth, 1))} aria-label="next month">
+            →
           </button>
         </div>
 
         <div className="cal-weekdays">
           {WEEKDAYS_KO.map((w, idx) => (
-            <div key={w} className={"wd" + (idx === 0 ? " sun" : "")}>
-              {w}
-            </div>
+            <div key={w} className={"wd" + (idx === 0 ? " sun" : "")}>{w}</div>
           ))}
         </div>
 
@@ -140,32 +165,14 @@ export default function DashboardCalendar({
               <button
                 key={`${key}-${i}`}
                 type="button"
-                className={
-                  "day-cell" +
-                  (isOtherMonth ? " other" : "") +
-                  (isSelected ? " selected" : "") +
-                  (isToday ? " today" : "")
-                }
+                className={"day-cell" + (isOtherMonth ? " other" : "") + (isSelected ? " selected" : "") + (isToday ? " today" : "")}
                 onClick={() => handlePickDate(cell.date)}
               >
                 <div className="day-num">{cell.day}</div>
-
                 <div className="marks">
-                  {marks?.ANNOUNCE ? (
-                    <span className="dot dot-announce" />
-                  ) : (
-                    <span className="dot-spacer" />
-                  )}
-                  {marks?.RECEIVE ? (
-                    <span className="dot dot-receive" />
-                  ) : (
-                    <span className="dot-spacer" />
-                  )}
-                  {marks?.RESULT ? (
-                    <span className="dot dot-result" />
-                  ) : (
-                    <span className="dot-spacer" />
-                  )}
+                  {marks?.ANNOUNCE ? <span className="dot dot-announce" /> : <span className="dot-spacer" />}
+                  {marks?.RECEIVE ? <span className="dot dot-receive" /> : <span className="dot-spacer" />}
+                  {marks?.RESULT ? <span className="dot dot-result" /> : <span className="dot-spacer" />}
                 </div>
               </button>
             );
@@ -189,15 +196,8 @@ export default function DashboardCalendar({
             <button
               key={t}
               type="button"
-              className={
-                "type-pill" +
-                (activeTypes[t] ? " on" : "") +
-                " t-" +
-                t.toLowerCase()
-              }
-              onClick={() =>
-                setActiveTypes((prev) => ({ ...prev, [t]: !prev[t] }))
-              }
+              className={"type-pill" + (activeTypes[t] ? " on" : "") + " t-" + t.toLowerCase()}
+              onClick={() => setActiveTypes((prev) => ({ ...prev, [t]: !prev[t] }))}
             >
               <span className="pill-dot" />
               {TYPE_LABEL[t]}
@@ -205,56 +205,80 @@ export default function DashboardCalendar({
           ))}
         </div>
 
-        <div className="event-list">
-          {selectedEvents.length === 0 ? (
-            <div className="empty">선택한 날짜의 표시할 항목이 없습니다.</div>
-          ) : (
-            selectedEvents.map((e, idx) => (
-              <div key={`${e.date}-${e.type}-${idx}`} className="event-item">
-                <div
-                  className={
-                    "event-badge tone-" + (e.badgeTone ?? toneByType(e.type))
-                  }
-                >
-                  {e.badgeText ?? defaultBadgeByType(e.type)}
-                </div>
-                <div className="event-title">{e.title}</div>
+        {viewMode === "map" ? (
+          <>
+            {/* 지도 모드에서는 상단 리스트(선택 UI) + 하단 지도 순서로 노출 */}
+            <div className="map-list-shell">
+              <div className="map-list-scroller">
+                {mapPoints.length === 0 ? (
+                  <div className="empty">선택한 날짜에 지도에 표시할 항목이 없습니다.</div>
+                ) : (
+                  mapPoints.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`event-item event-item-button ${selectedMapPointId === item.id ? "is-active" : ""}`}
+                      onClick={() => setSelectedMapPointId(item.id)}
+                    >
+                      <div className={`event-badge tone-${toneByType(item.eventType)}`}>
+                        {item.eventBadgeLabel}
+                      </div>
+                      <div className="map-item-text">
+                        <div className="event-title">{item.title}</div>
+                        <div className="small text-muted mt-1">
+                          {item.eventPhaseLabel} · 상태: {item.status ?? "정보 없음"}
+                        </div>
+                      </div>
+                    </button>
+                  ))
+                )}
               </div>
-            ))
-          )}
-        </div>
+            </div>
 
-        <div className="cal-right-legend">
-          {(["ANNOUNCE", "RECEIVE", "RESULT"] as CalendarEventType[]).map(
-            (t) => (
-              <span
-                key={`legend-${t}`}
-                className={`cal-right-legend-pill t-${t.toLowerCase()}`}
-              >
-                <span className="cal-right-legend-dot" />
-                {defaultBadgeByType(t)}
-              </span>
-            )
-          )}
-        </div>
+            <KakaoMapPanel
+              points={mapPoints}
+              selectedDateLabel={rightTitle}
+              selectedPointId={selectedMapPointId}
+              onSelectPoint={setSelectedMapPointId}
+            />
+          </>
+        ) : (
+          <>
+            <div className="event-list">
+              {selectedEvents.length === 0 ? (
+                <div className="empty">선택한 날짜에 표시할 항목이 없습니다.</div>
+              ) : (
+                selectedEvents.map((e, idx) => (
+                  <div key={`${e.date}-${e.type}-${idx}`} className="event-item">
+                    <div className={"event-badge tone-" + (e.badgeTone ?? toneByType(e.type))}>
+                      {e.badgeText ?? defaultBadgeByType(e.type)}
+                    </div>
+                    <div className="event-title">{e.title}</div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="cal-right-legend">
+              {(["ANNOUNCE", "RECEIVE", "RESULT"] as CalendarEventType[]).map((t) => (
+                <span key={`legend-${t}`} className={`cal-right-legend-pill t-${t.toLowerCase()}`}>
+                  <span className="cal-right-legend-dot" />
+                  {defaultBadgeByType(t)}
+                </span>
+              ))}
+            </div>
+          </>
+        )}
 
         <div className="right-actions">
-          <button className="outline-btn" type="button">
-            모집공고 전체보기
-          </button>
+          <button className="outline-btn" type="button">모집공고 전체보기</button>
         </div>
       </div>
     </div>
   );
 }
 
-function LegendItem({
-  label,
-  kind,
-}: {
-  label: string;
-  kind: "today" | "selected" | CalendarEventType;
-}) {
+function LegendItem({ label, kind }: { label: string; kind: "today" | "selected" | CalendarEventType }) {
   if (kind === "today") {
     return (
       <div className="legend-item">
@@ -308,25 +332,11 @@ function formatYmd(d: Date) {
 function buildMonthGrid(viewMonth: Date) {
   const first = startOfMonth(viewMonth);
   const firstDayOfWeek = first.getDay();
-  const start = new Date(
-    first.getFullYear(),
-    first.getMonth(),
-    1 - firstDayOfWeek
-  );
+  const start = new Date(first.getFullYear(), first.getMonth(), 1 - firstDayOfWeek);
 
-  const cells: {
-    date: Date;
-    dateKey: string;
-    day: number;
-    inMonth: boolean;
-  }[] = [];
-
+  const cells: { date: Date; dateKey: string; day: number; inMonth: boolean }[] = [];
   for (let i = 0; i < 42; i++) {
-    const d = new Date(
-      start.getFullYear(),
-      start.getMonth(),
-      start.getDate() + i
-    );
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
     cells.push({
       date: d,
       dateKey: formatYmd(stripTime(d)),
@@ -334,7 +344,6 @@ function buildMonthGrid(viewMonth: Date) {
       inMonth: d.getMonth() === viewMonth.getMonth(),
     });
   }
-
   return cells;
 }
 
