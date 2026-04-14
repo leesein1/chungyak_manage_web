@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\Search.css
+ * 설명: 해당 화면/컴포넌트 전용 스타일을 정의합니다.
+ */
+
 .search-page {
   display: flex;
   flex-direction: column;
@@ -311,6 +317,21 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.search-result-list-shell {
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.search-result-list-shell::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.search-result-list-shell.is-scroll {
+  max-height: 620px;
 }
 
 .search-result-item {

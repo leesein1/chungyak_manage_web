@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/components\Search\DetailMap.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { SearchDetailItem } from "@/pages/search/types";
 
@@ -22,6 +28,7 @@ const MARKER_COLORS = {
 
 let sdkPromise: Promise<any> | null = null;
 
+// loadKakaoSdk: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function loadKakaoSdk(appKey: string) {
   if (window.kakao?.maps) return Promise.resolve(window.kakao);
   if (sdkPromise) return sdkPromise;
@@ -62,6 +69,7 @@ function loadKakaoSdk(appKey: string) {
   return sdkPromise;
 }
 
+// escapeHtml: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
@@ -71,6 +79,7 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#039;");
 }
 
+// markerColorByStatus: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function markerColorByStatus(statusText: string) {
   if (statusText.includes("마감")) return MARKER_COLORS.closed;
   if (statusText.includes("중")) return MARKER_COLORS.receiving;
@@ -78,6 +87,7 @@ function markerColorByStatus(statusText: string) {
   return MARKER_COLORS.scheduled;
 }
 
+// buildMarkerImage: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function buildMarkerImage(kakao: any, color: string) {
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48">
@@ -91,6 +101,7 @@ function buildMarkerImage(kakao: any, color: string) {
   return new kakao.maps.MarkerImage(src, size, { offset });
 }
 
+// geocodeAddress: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function geocodeAddress(kakao: any, query: string) {
   return new Promise<any | null>((resolve) => {
     if (!query.trim()) {
@@ -109,6 +120,7 @@ function geocodeAddress(kakao: any, query: string) {
   });
 }
 
+// findByKeyword: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function findByKeyword(kakao: any, query: string) {
   return new Promise<any | null>((resolve) => {
     if (!query.trim()) {
@@ -127,6 +139,7 @@ function findByKeyword(kakao: any, query: string) {
   });
 }
 
+// DetailMap: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function DetailMap({ selected }: Props) {
   const mapElRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);

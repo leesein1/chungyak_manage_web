@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\Dashboard.css
+ * 설명: 해당 화면/컴포넌트 전용 스타일을 정의합니다.
+ */
+
 .dashboard-page {
   display: flex;
   flex-direction: column;
@@ -259,6 +265,13 @@
 .dash-table-scroll {
   max-height: 360px;
   overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.dash-table-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .dash-table-scroll table {

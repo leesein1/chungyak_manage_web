@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\dashboard\DashboardHero.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import { FaArrowUp, FaCheckCircle, FaClock } from "react-icons/fa";
 import HeroArt from "./HeroArt";
 

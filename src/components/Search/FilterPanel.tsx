@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/components\Search\FilterPanel.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import type { SearchStatusFilter } from "@/pages/search/types";
 
 type Props = {
@@ -13,6 +19,7 @@ type Props = {
   setStatus: (v: SearchStatusFilter) => void;
 };
 
+// FilterPanel: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function FilterPanel({
   onlySoon,
   setOnlySoon,

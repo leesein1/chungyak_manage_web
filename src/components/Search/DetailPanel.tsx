@@ -1,8 +1,15 @@
+/*
+ * @file-overview
+ * 파일: src/components\Search\DetailPanel.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import { Spinner } from "react-bootstrap";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import type { SearchDetailItem } from "@/pages/search/types";
 import DetailMap from "./DetailMap";
 
+// RowItem: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function RowItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="search-detail-row">
@@ -18,6 +25,7 @@ type Props = {
   toggleFav: (id: string) => void;
 };
 
+// DetailPanel: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function DetailPanel({ selected, detailLoading, toggleFav }: Props) {
   return (
     <section className="search-detail-card panel-card">

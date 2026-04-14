@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\dashboard\HeroArt.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 // 히어로 오른쪽에 배치되는 장식용 SVG 컴포넌트입니다.
 export default function HeroArt() {
   return (

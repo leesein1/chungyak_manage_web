@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\NotFound.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 /**
  * NotFound
  * 용도: 잘못된 라우트 접근 시 보여줄 404 페이지입니다.
@@ -6,6 +12,7 @@
 
 import { Link } from "react-router-dom";
 
+// NotFound: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function NotFound() {
   return (
     <div className="text-center" style={{ padding: 48 }}>

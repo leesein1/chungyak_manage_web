@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/components\dashboard\DashboardKpi.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import { Container, Col, Row } from "react-bootstrap";
 import {
   FaBell,
@@ -19,6 +25,7 @@ type Props = {
   syncHealthy: boolean;
 };
 
+// DashboardKpi: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function DashboardKpi({
   totalCount,
   ongoingCount,
@@ -29,6 +36,7 @@ export default function DashboardKpi({
 }: Props) {
   const navigate = useNavigate();
 
+  // goSearchWithMode: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
   const goSearchWithMode = (mode: "ongoing" | "soon" | "favorite") => {
     const qs = new URLSearchParams();
     qs.set("from", "dashboard");

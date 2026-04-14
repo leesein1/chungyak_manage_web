@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\dashboard\api.ts
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import type { ApiRcvhome, ScheduleLastResponse } from "./types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
@@ -17,11 +23,13 @@ const K_ADDR = "\uc8fc\uc18c";
 const K_DDAY = "\ub0a8\uc740\uc77c\uc218";
 const K_FAVORITE = "\uc990\uaca8\ucc3e\uae30";
 
+// 대시보드 API 호출에서 절대 URL/프록시 URL을 통일해서 만든다.
 function buildApiUrl(path: string) {
   if (API_BASE_URL) return `${API_BASE_URL}/api/${path}`;
   return `${API_PROXY_PREFIX}/${path}`;
 }
 
+// 대시보드 API의 공통 fetch 래퍼: HTTP 상태/JSON 파싱 실패를 명시적으로 처리한다.
 async function fetchJson<T>(url: string, signal: AbortSignal, label: string): Promise<T> {
   const res = await fetch(url, { signal });
   const text = await res.text();
@@ -40,6 +48,7 @@ async function fetchJson<T>(url: string, signal: AbortSignal, label: string): Pr
   }
 }
 
+// 숫자/문자/Date 값을 화면 모델에서 쓰기 쉬운 문자열로 변환한다.
 function toText(value: unknown) {
   if (typeof value === "string") return value;
   if (typeof value === "number" || typeof value === "bigint") return String(value);
@@ -47,10 +56,12 @@ function toText(value: unknown) {
   return undefined;
 }
 
+// API에서 내려오는 boolean 필드만 안전하게 추출한다.
 function toBool(value: unknown) {
   return typeof value === "boolean" ? value : undefined;
 }
 
+// 응답 키가 여러 형태(한글/영문/대소문자)로 내려와도 값을 찾도록 보정한다.
 function getValue(raw: Record<string, unknown>, keys: string[]) {
   for (const key of keys) {
     if (Object.prototype.hasOwnProperty.call(raw, key)) return raw[key];
@@ -69,6 +80,7 @@ function getValue(raw: Record<string, unknown>, keys: string[]) {
   return undefined;
 }
 
+// 대시보드 API의 공고 1건을 앱 내부 표준 모델(ApiRcvhome)로 정규화한다.
 function normalizeRcvhomeRow(raw: Record<string, unknown>): ApiRcvhome {
   const beginDate = toText(getValue(raw, [K_BEGIN, "BEGIN_DE", "beginDe", "beginDate"]));
   const endDate = toText(getValue(raw, [K_END, "END_DE", "endDe", "endDate"]));
@@ -103,6 +115,7 @@ function normalizeRcvhomeRow(raw: Record<string, unknown>): ApiRcvhome {
   };
 }
 
+// 공고 목록 API 응답 배열을 읽고 정규화하며, 디버깅용 로그를 함께 남긴다.
 async function fetchRcvhomeRows(url: string, signal: AbortSignal, label: string) {
   const rows = await fetchJson<unknown[]>(url, signal, label);
   if (!Array.isArray(rows)) return [];
@@ -126,6 +139,7 @@ async function fetchRcvhomeRows(url: string, signal: AbortSignal, label: string)
     .map(normalizeRcvhomeRow);
 }
 
+// 대시보드 진입 시 필요한 4개 API(전체/임박/즐겨찾기/동기화로그)를 병렬 호출한다.
 export function fetchDashboardApis(query: string, signal: AbortSignal) {
   return Promise.allSettled([
     fetchRcvhomeRows(`${buildApiUrl("rcvhome-search/rcvhomes")}?${query}`, signal, "all announcements"),

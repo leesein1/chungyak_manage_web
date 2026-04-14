@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\search\api.ts
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import type {
   SearchDetailItem,
   SearchFilterParams,
@@ -8,28 +14,33 @@ import type {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const API_PROXY_PREFIX = "/backend-api";
 
+// search 도메인 API 호출용 URL(실서버/프록시)을 통일해서 만든다.
 function buildApiUrl(path: string) {
   if (API_BASE_URL) return `${API_BASE_URL}/api/${path}`;
   return `${API_PROXY_PREFIX}/${path}`;
 }
 
+// 화면 상태 필터값을 API query 값으로 변환한다.
 function statusToQueryValue(status: SearchStatusFilter) {
   if (status === "all") return "";
   return status;
 }
 
+// 날짜 입력값을 하루 시작 시각 ISO로 변환한다.
 function toIsoStart(dateYmd?: string) {
   if (!dateYmd) return "";
   const date = new Date(`${dateYmd}T00:00:00`);
   return Number.isNaN(date.getTime()) ? "" : date.toISOString();
 }
 
+// 날짜 입력값을 하루 끝 시각 ISO로 변환한다.
 function toIsoEnd(dateYmd?: string) {
   if (!dateYmd) return "";
   const date = new Date(`${dateYmd}T23:59:59.999`);
   return Number.isNaN(date.getTime()) ? "" : date.toISOString();
 }
 
+// 검색 목록 API에서 쓰는 BeginFrom/BeginTo 쿼리를 생성한다.
 function buildDateRangeQuery(beginFrom?: string, beginTo?: string) {
   const qs = new URLSearchParams();
 
@@ -43,6 +54,7 @@ function buildDateRangeQuery(beginFrom?: string, beginTo?: string) {
   return qs;
 }
 
+// D-day 문자열을 숫자 비교 가능한 값으로 파싱한다.
 function parseDday(text: string) {
   const normalized = text.trim();
   const matched = normalized.match(/D-(\d+)/i);
@@ -51,6 +63,7 @@ function parseDday(text: string) {
   return Number.POSITIVE_INFINITY;
 }
 
+// 날짜 문자열을 yyyy-mm-dd 형식으로 화면 표시용 정규화한다.
 function formatDate(value?: string) {
   if (!value) return "-";
   const date = new Date(value);
@@ -61,6 +74,7 @@ function formatDate(value?: string) {
   return `${y}-${m}-${d}`;
 }
 
+// 응답 객체에서 지정한 후보 키 중 첫 번째 텍스트 값을 꺼낸다.
 function getText(raw: Record<string, unknown>, keys: string[]) {
   for (const key of keys) {
     const value = raw[key];
@@ -70,6 +84,7 @@ function getText(raw: Record<string, unknown>, keys: string[]) {
   return "";
 }
 
+// 응답 객체에서 지정한 후보 키 중 첫 번째 boolean 값을 꺼낸다.
 function getBool(raw: Record<string, unknown>, keys: string[]) {
   for (const key of keys) {
     const value = raw[key];
@@ -78,16 +93,19 @@ function getBool(raw: Record<string, unknown>, keys: string[]) {
   return false;
 }
 
+// search 도메인의 공통 fetch 래퍼.
 async function fetchJson<T>(url: string, signal: AbortSignal, label: string): Promise<T> {
   const res = await fetch(url, { signal });
   if (!res.ok) throw new Error(`${label} 실패 (${res.status})`);
   return (await res.json()) as T;
 }
 
+// 공고의 기본 식별자(pblancId)를 여러 키 후보에서 안전하게 추출한다.
 function getPrimaryId(raw: Record<string, unknown>) {
   return getText(raw, ["고유번호", "pblancId", "PBLANC_ID", "id"]);
 }
 
+// 목록 API 한 행을 화면 목록 모델(SearchListItem)로 변환한다.
 function mapListRow(raw: Record<string, unknown>, index: number): SearchListItem {
   const apiId = getPrimaryId(raw);
   const order = getText(raw, ["순서", "order", "NO"]);
@@ -119,6 +137,7 @@ function mapListRow(raw: Record<string, unknown>, index: number): SearchListItem
   };
 }
 
+// 상세 API 응답을 상세 패널 모델(SearchDetailItem)로 변환한다.
 function mapDetail(raw: Record<string, unknown>): SearchDetailItem {
   const mapped = mapListRow(raw, 0);
   const apiId = getPrimaryId(raw);
@@ -143,6 +162,7 @@ function mapDetail(raw: Record<string, unknown>): SearchDetailItem {
   };
 }
 
+// 검색 조건으로 목록 API를 호출하고 화면 모델 배열로 반환한다.
 export async function fetchSearchList(params: SearchFilterParams, signal: AbortSignal) {
   const qs = buildDateRangeQuery(params.beginFrom, params.beginTo);
   if (params.keyword.trim()) qs.set("Keyword", params.keyword.trim());
@@ -171,6 +191,7 @@ export async function fetchSearchList(params: SearchFilterParams, signal: AbortS
   return mapped;
 }
 
+// 선택한 공고 ID 기준으로 상세 API를 조회한다.
 export async function fetchSearchDetail(pblancId: string, signal: AbortSignal) {
   const detail = await fetchJson<Record<string, unknown>>(
     buildApiUrl(`rcvhome-search/rcvhomes/${encodeURIComponent(pblancId)}`),
@@ -180,6 +201,7 @@ export async function fetchSearchDetail(pblancId: string, signal: AbortSignal) {
   return mapDetail(detail);
 }
 
+// 즐겨찾기 상태를 서버에 반영한다. (현재 true면 DELETE, false면 POST)
 export async function toggleFavorite(pblancId: string, isFavorite: boolean) {
   const method = isFavorite ? "DELETE" : "POST";
   const res = await fetch(buildApiUrl(`rcvhome-favorites/${encodeURIComponent(pblancId)}`), {

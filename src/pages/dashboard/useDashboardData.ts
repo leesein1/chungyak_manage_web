@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\dashboard\useDashboardData.ts
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import { fetchDashboardApis } from "./api";
 import { buildDashboardStateFromApi, buildDateRangeQuery } from "./utils";
@@ -8,15 +14,12 @@ import {
   type ScheduleLastResponse,
 } from "./types";
 
-// allSettled 결과에서 성공 값만 꺼내고, 실패 시 기본값을 돌려줍니다.
-function getSettledValue<T>(
-  result: PromiseSettledResult<T>,
-  fallback: T
-): T {
+// Promise.allSettled 결과에서 성공 값만 꺼내고, 실패 시 기본값으로 대체한다.
+function getSettledValue<T>(result: PromiseSettledResult<T>, fallback: T): T {
   return result.status === "fulfilled" ? result.value : fallback;
 }
 
-// 실패한 API들을 사람이 읽기 쉬운 문장으로 합칩니다.
+// 일부 API가 실패해도 화면에 안내할 수 있도록 에러 메시지를 합친다.
 function getPartialErrorText(results: PromiseSettledResult<unknown>[]) {
   const messages = results
     .filter((result) => result.status === "rejected")
@@ -25,7 +28,7 @@ function getPartialErrorText(results: PromiseSettledResult<unknown>[]) {
   return messages.length ? messages.join(" | ") : null;
 }
 
-// 대시보드 데이터 조회와 가공을 담당하는 커스텀 훅입니다.
+// 대시보드에서 쓰는 4개 API를 호출하고 화면 상태를 구성하는 전용 훅.
 export function useDashboardData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +37,7 @@ export function useDashboardData() {
   useEffect(() => {
     const abortController = new AbortController();
 
-    // 대시보드 4개 API를 병렬 조회하고 화면 상태를 갱신합니다.
+    // 대시보드 4개 API를 병렬 조회하고 결과를 단일 상태로 병합한다.
     async function loadDashboard() {
       setLoading(true);
       setError(null);
@@ -49,12 +52,7 @@ export function useDashboardData() {
         const scheduleLast = getSettledValue<ScheduleLastResponse>(results[3], {});
 
         setState(
-          buildDashboardStateFromApi(
-            allRows,
-            deadlineRows,
-            favoriteRows,
-            scheduleLast
-          )
+          buildDashboardStateFromApi(allRows, deadlineRows, favoriteRows, scheduleLast)
         );
         setError(getPartialErrorText(results));
       } catch (err) {
@@ -75,9 +73,9 @@ export function useDashboardData() {
     };
   }, []);
 
-  // 히어로 상단의 동기화 상태 문구를 계산합니다.
+  // 상단 Hero에 표시할 동기화 상태 문구를 계산한다.
   const heroStatusText = useMemo(() => {
-    if (loading) return "동기화 확인 중";
+    if (loading) return "동기화 상태 확인 중";
     return state.syncHealthy ? "정상 동기화" : "동기화 확인 필요";
   }, [loading, state.syncHealthy]);
 

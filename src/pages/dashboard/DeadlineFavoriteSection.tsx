@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+/*
+ * @file-overview
+ * 파일: src/pages\dashboard\DeadlineFavoriteSection.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import type { SoonItem } from "./types";
@@ -9,6 +15,10 @@ type Props = {
   favoriteItems: SoonItem[];
 };
 
+const INITIAL_VISIBLE_COUNT = 5;
+const LOAD_CHUNK = 5;
+
+// DeadlineFavoriteSection: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function DeadlineFavoriteSection({
   loading,
   soonItems,
@@ -16,8 +26,10 @@ export default function DeadlineFavoriteSection({
 }: Props) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"soon" | "favorite">("soon");
-  const [expanded, setExpanded] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
+  // 하단 목록에서 더블클릭한 제목/현재 탭 정보를 search 페이지 쿼리로 넘긴다.
   const navigateToSearch = (keyword?: string) => {
     const mode = activeTab === "soon" ? "soon" : "favorite";
     const qs = new URLSearchParams();
@@ -27,15 +39,26 @@ export default function DeadlineFavoriteSection({
     navigate(`/search?${qs.toString()}`);
   };
 
+  // 탭 전환 시 데이터 소스를 바꾼다. (마감임박 / 즐겨찾기)
   const items = useMemo(
     () => (activeTab === "soon" ? soonItems : favoriteItems),
     [activeTab, soonItems, favoriteItems]
   );
 
+  // 탭이 바뀌면 첫 5건부터 다시 보여준다.
   useEffect(() => {
-    setExpanded(false);
+    setVisibleCount(INITIAL_VISIBLE_COUNT);
   }, [activeTab]);
 
+  // 데이터 길이가 줄었을 때 visibleCount가 범위를 벗어나지 않도록 보정한다.
+  useEffect(() => {
+    setVisibleCount((prev) => {
+      const clamped = Math.min(prev, items.length || INITIAL_VISIBLE_COUNT);
+      return Math.max(clamped, INITIAL_VISIBLE_COUNT);
+    });
+  }, [items.length]);
+
+  // 현재 내려온 데이터를 콘솔에서 빠르게 검증하기 위한 디버깅 로그.
   useEffect(() => {
     console.groupCollapsed("[Dashboard] Deadline/Favorite data");
     console.log("D-7 items:", soonItems.length);
@@ -62,10 +85,30 @@ export default function DeadlineFavoriteSection({
     console.groupEnd();
   }, [soonItems, favoriteItems]);
 
+  // 현재 화면에 노출할 실제 행 개수만큼 슬라이스한다.
   const visibleItems = useMemo(
-    () => (expanded ? items : items.slice(0, 5)),
-    [expanded, items]
+    () => items.slice(0, visibleCount),
+    [items, visibleCount]
   );
+  const hasMore = visibleCount < items.length;
+
+  // 더보기 버튼/스크롤 자동 로딩에서 공통으로 쓰는 5건 증가 함수.
+  const loadMore = useCallback(() => {
+    setVisibleCount((prev) => Math.min(prev + LOAD_CHUNK, items.length));
+  }, [items.length]);
+
+  // 스크롤이 바닥 근처에 도달하면 다음 5건을 자동으로 붙인다.
+  const handleTableScroll = useCallback(() => {
+    const node = scrollContainerRef.current;
+    if (!node || loading || !hasMore) return;
+
+    const isNearBottom =
+      node.scrollTop + node.clientHeight >= node.scrollHeight - 24;
+
+    if (isNearBottom) {
+      loadMore();
+    }
+  }, [hasMore, loadMore, loading]);
 
   const emptyLabel =
     activeTab === "soon"
@@ -105,13 +148,17 @@ export default function DeadlineFavoriteSection({
           </button>
         </div>
 
-        <div className="table-wrap dash-table-scroll">
+        <div
+          ref={scrollContainerRef}
+          className="table-wrap dash-table-scroll"
+          onScroll={handleTableScroll}
+        >
           <table className="table table-sm mb-0">
             <thead>
               <tr>
                 <th style={{ width: 70 }}>IDX</th>
                 <th style={{ width: 130 }}>상태</th>
-                <th style={{ width: 100 }}>남은날</th>
+                <th style={{ width: 100 }}>남은일</th>
                 <th style={{ width: 120 }}>공고일</th>
                 <th style={{ minWidth: 360 }}>공고명</th>
               </tr>
@@ -152,14 +199,15 @@ export default function DeadlineFavoriteSection({
           </table>
         </div>
 
-        {!loading && items.length > 5 ? (
+        {!loading && items.length > INITIAL_VISIBLE_COUNT ? (
           <div className="text-center mt-3">
             <button
               type="button"
               className="btn btn-sm btn-outline-secondary"
-              onClick={() => setExpanded((prev) => !prev)}
+              onClick={loadMore}
+              disabled={!hasMore}
             >
-              {expanded ? "접기" : `더보기 (${items.length - 5}건)`}
+              {hasMore ? `더보기 (${items.length - visibleCount}건)` : "모두 불러옴"}
             </button>
           </div>
         ) : null}

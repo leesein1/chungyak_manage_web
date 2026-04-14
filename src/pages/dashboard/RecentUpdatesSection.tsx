@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\dashboard\RecentUpdatesSection.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import { Card } from "react-bootstrap";
 import type { UpdateItem } from "./types";
 

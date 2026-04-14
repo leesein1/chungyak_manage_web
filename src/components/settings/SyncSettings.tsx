@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/components\settings\SyncSettings.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 /**
  * SyncSettings
  * 용도: `Settings` 페이지의 동기화 및 기본 조회 필터 설정 UI를 담당하는 컴포넌트입니다.
@@ -8,6 +14,7 @@
 
 import { Card, Col, Form, Row } from "react-bootstrap";
 
+// SyncSettings: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function SyncSettings() {
   return (
     <Card className="panel-card">

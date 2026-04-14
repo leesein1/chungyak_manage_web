@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\Dashboard.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import DashboardKpi from "@/components/dashboard/DashboardKpi";
 import DashboardCalendar from "@/components/dashboard/DashboardCalendar";
@@ -7,6 +13,7 @@ import RecentUpdatesSection from "./dashboard/RecentUpdatesSection";
 import { useDashboardData } from "./dashboard/useDashboardData";
 import "./Dashboard.css";
 
+// SectionLoader: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function SectionLoader({ label, minHeight }: { label: string; minHeight: number }) {
   return (
     <Card className="panel-card dash-section-card dash-loader-card">
@@ -18,6 +25,7 @@ function SectionLoader({ label, minHeight }: { label: string; minHeight: number 
   );
 }
 
+// KpiLoader: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function KpiLoader() {
   return (
     <Container fluid className="px-0 mb-3">

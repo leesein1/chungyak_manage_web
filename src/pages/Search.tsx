@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\Search.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Spinner } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
@@ -11,6 +17,7 @@ import type { SearchDetailItem, SearchListItem, SearchStatusFilter } from "./sea
 import "react-toastify/dist/ReactToastify.css";
 import "./Search.css";
 
+// Date 객체를 yyyy-mm-dd 문자열로 변환한다.
 function formatYmd(date: Date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -18,6 +25,7 @@ function formatYmd(date: Date) {
   return `${y}-${m}-${d}`;
 }
 
+// 검색 페이지 기본 조회 기간(과거 12개월 ~ 미래 2개월)을 만든다.
 function getDefaultRange() {
   const from = new Date();
   from.setMonth(from.getMonth() - 12);
@@ -26,13 +34,15 @@ function getDefaultRange() {
   return { beginFrom: formatYmd(from), beginTo: formatYmd(to) };
 }
 
-const LIST_PAGE_SIZE = 15;
+const LIST_PAGE_SIZE = 5;
 const VALID_STATUS: SearchStatusFilter[] = ["all", "접수예정", "접수중", "접수마감"];
 
+// parseDashboardPreset: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function parseDashboardPreset(
   searchParams: URLSearchParams,
   defaults: { beginFrom: string; beginTo: string },
 ) {
+  // 대시보드에서 진입할 때 전달된 mode/status/keyword를 검색 필터 초기값으로 변환한다.
   const from = searchParams.get("from");
   const mode = searchParams.get("mode");
   const rawStatus = searchParams.get("status");
@@ -100,6 +110,7 @@ function parseDashboardPreset(
   };
 }
 
+// Search: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function Search() {
   const [searchParams] = useSearchParams();
   const defaults = useMemo(() => getDefaultRange(), []);
@@ -129,6 +140,7 @@ export default function Search() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(LIST_PAGE_SIZE);
 
+  // 목록에서 선택한 행 기준으로 상세 패널에 보여줄 데이터를 계산한다.
   const selected = useMemo(() => rows.find((row) => row.id === selectedId), [rows, selectedId]);
   const detailForPanel = useMemo(() => {
     if (selectedDetail && selected?.apiId && selectedDetail.id === selected.apiId) return selectedDetail;
@@ -149,6 +161,7 @@ export default function Search() {
     } as SearchDetailItem;
   }, [selected, selectedDetail]);
 
+  // 화면 상단의 "적용된 필터 칩" 문구를 생성한다.
   const appliedChips = useMemo(() => {
     const chips: string[] = [];
     if (applied.keyword.trim()) chips.push(`키워드: ${applied.keyword.trim()}`);
@@ -162,6 +175,7 @@ export default function Search() {
   const visibleRows = useMemo(() => rows.slice(0, visibleCount), [rows, visibleCount]);
   const hasMoreRows = visibleCount < rows.length;
 
+  // 검색 버튼/엔터 입력 시 필터 유효성 검증 후 조회 조건을 확정한다.
   const handleSearch = () => {
     if (beginFrom && beginTo && beginFrom > beginTo) {
       setActionError("BeginFrom은 BeginTo보다 늦을 수 없습니다.");
@@ -171,6 +185,7 @@ export default function Search() {
     setApplied({ keyword: q, status, onlyOngoing, onlySoon, onlyFavorite, beginFrom, beginTo });
   };
 
+  // URL 쿼리(from=dashboard 등)가 바뀌면 입력값과 적용조건을 동기화한다.
   useEffect(() => {
     setQ(preset.keyword);
     setStatus(preset.status);
@@ -182,6 +197,7 @@ export default function Search() {
     setApplied(preset);
   }, [preset]);
 
+  // 적용된 필터 조건(applied)이 바뀔 때마다 목록 API를 다시 조회한다.
   useEffect(() => {
     const abortController = new AbortController();
     setLoading(true);
@@ -210,6 +226,7 @@ export default function Search() {
     return () => abortController.abort();
   }, [applied]);
 
+  // 선택된 공고의 apiId가 바뀌면 상세 API를 다시 조회한다.
   useEffect(() => {
     const apiId = selected?.apiId;
     if (!selectedId || !apiId) {
@@ -234,6 +251,7 @@ export default function Search() {
     return () => abortController.abort();
   }, [selectedId, selected?.apiId]);
 
+  // 목록/상세에서 클릭한 즐겨찾기 상태를 낙관적 업데이트 후 서버에 반영한다.
   const handleToggleFavorite = async (row: SearchListItem) => {
     setActionError(null);
     if (!row.apiId) {

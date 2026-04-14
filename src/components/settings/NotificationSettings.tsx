@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/components\settings\NotificationSettings.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 /**
  * NotificationSettings
  * 용도: `Settings` 페이지의 알림 관련 설정(UI) 컴포넌트입니다.
@@ -8,6 +14,7 @@
 
 import { Card, Form } from "react-bootstrap";
 
+// NotificationSettings: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function NotificationSettings() {
   return (
     <Card className="panel-card">

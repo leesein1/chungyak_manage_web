@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\dashboard\types.ts
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import type { CalendarEvent } from "@/components/dashboard/DashboardCalendar";
 
 export type ApiRcvhome = {

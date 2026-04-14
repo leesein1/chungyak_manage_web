@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/components\dashboard\DashboardCalendar.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DashboardCalendar.css";
@@ -31,6 +37,7 @@ const TYPE_LABEL: Record<CalendarEventType, string> = {
   RESULT: "청약마감",
 };
 
+// DashboardCalendar: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function DashboardCalendar({
   events,
   initialMonth,
@@ -113,12 +120,14 @@ export default function DashboardCalendar({
 
   const rightTitle = `${selectedDate.getFullYear()}년 ${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일 청약공고`;
 
+  // handlePickDate: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
   const handlePickDate = (d: Date) => {
     const sd = stripTime(d);
     setSelectedDate(sd);
     onSelectDate?.(sd);
   };
 
+  // handleOpenMyHome: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
   const handleOpenMyHome = (url?: string) => {
     const target = url && url.trim() ? url : "https://www.myhome.go.kr/";
     window.open(target, "_blank", "noopener,noreferrer");
@@ -359,6 +368,7 @@ export default function DashboardCalendar({
   );
 }
 
+// LegendItem: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function LegendItem({
   label,
   kind,
@@ -391,24 +401,29 @@ function LegendItem({
   );
 }
 
+// legendDotClass: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function legendDotClass(t: CalendarEventType) {
   if (t === "ANNOUNCE") return "dot-announce";
   if (t === "RECEIVE") return "dot-receive";
   return "dot-result";
 }
 
+// stripTime: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function stripTime(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
+// startOfMonth: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function startOfMonth(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), 1);
 }
 
+// addMonths: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function addMonths(d: Date, diff: number) {
   return new Date(d.getFullYear(), d.getMonth() + diff, 1);
 }
 
+// formatYmd: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function formatYmd(d: Date) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -416,6 +431,7 @@ function formatYmd(d: Date) {
   return `${y}-${m}-${day}`;
 }
 
+// buildMonthGrid: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function buildMonthGrid(viewMonth: Date) {
   const first = startOfMonth(viewMonth);
   const firstDayOfWeek = first.getDay();
@@ -447,12 +463,14 @@ function buildMonthGrid(viewMonth: Date) {
   return cells;
 }
 
+// toneByType: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function toneByType(t: CalendarEventType) {
   if (t === "ANNOUNCE") return "green";
   if (t === "RECEIVE") return "red";
   return "orange";
 }
 
+// defaultBadgeByType: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function defaultBadgeByType(t: CalendarEventType) {
   if (t === "ANNOUNCE") return "모집공고";
   if (t === "RECEIVE") return "접수";

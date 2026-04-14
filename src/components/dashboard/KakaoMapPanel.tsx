@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/components\dashboard\KakaoMapPanel.tsx
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type MapNoticePoint = {
@@ -39,6 +45,7 @@ const MARKER_COLOR_BY_TYPE: Record<string, string> = {
 
 let sdkPromise: Promise<any> | null = null;
 
+// loadKakaoSdk: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function loadKakaoSdk(appKey: string) {
   if (window.kakao?.maps) return Promise.resolve(window.kakao);
   if (sdkPromise) return sdkPromise;
@@ -77,6 +84,7 @@ function loadKakaoSdk(appKey: string) {
   return sdkPromise;
 }
 
+// buildMarkerSvgDataUri: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function buildMarkerSvgDataUri(color: string) {
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48">
@@ -87,6 +95,7 @@ function buildMarkerSvgDataUri(color: string) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
+// getMarkerImage: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 function getMarkerImage(
   kakao: any,
   eventType?: "ANNOUNCE" | "RECEIVE" | "RESULT",
@@ -100,6 +109,7 @@ function getMarkerImage(
   return new kakao.maps.MarkerImage(src, size, { offset });
 }
 
+// KakaoMapPanel: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
 export default function KakaoMapPanel({
   points,
   selectedDateLabel,
@@ -129,6 +139,7 @@ export default function KakaoMapPanel({
     });
   }, [points]);
 
+  // openInfoWindow: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
   const openInfoWindow = (point: MapNoticePoint, marker: any) => {
     const content = `
       <div style="padding:10px 12px;max-width:250px;font-size:12px;line-height:1.45;">

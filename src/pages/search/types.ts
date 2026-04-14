@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\search\types.ts
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 export type SearchStatusFilter = "all" | "접수예정" | "접수중" | "접수마감";
 
 export type SearchListItem = {

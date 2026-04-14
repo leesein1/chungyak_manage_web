@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\dashboard\utils.ts
+ * 설명: 앱 기능을 구성하는 모듈입니다.
+ */
+
 import type { CalendarEvent } from "@/components/dashboard/DashboardCalendar";
 import type {
   ApiRcvhome,
@@ -7,6 +13,7 @@ import type {
   UpdateItem,
 } from "./types";
 
+// 대시보드 API 원본의 날짜 문자열을 화면/필터에서 공통으로 쓰는 yyyy-mm-dd로 정규화한다.
 function toIsoDate(value?: string) {
   if (!value) return "";
   const trimmed = value.trim();
@@ -38,6 +45,7 @@ function toIsoDate(value?: string) {
   return `${y}-${m}-${d}`;
 }
 
+// API의 D-day 텍스트를 숫자 비교가 가능한 정수로 바꾼다.
 function parseDday(text?: string) {
   if (!text) return 999;
 
@@ -47,6 +55,7 @@ function parseDday(text?: string) {
   return 999;
 }
 
+// 마지막 동기화 시각을 "방금/몇분 전/몇시간 전" 형태로 변환한다.
 export function formatRelativeTime(iso?: string | null) {
   if (!iso) return "정보 없음";
 
@@ -65,9 +74,9 @@ export function formatRelativeTime(iso?: string | null) {
   return `${diffDay}일 전`;
 }
 
+// 대시보드 API 호출에서 쓰는 공통 기간 쿼리(BeginFrom/BeginTo)를 만든다.
 export function buildDateRangeQuery() {
-  const from = new Date();
-  from.setDate(from.getDate() - 30);
+  const from = new Date("2020-01-01T00:00:00.000Z");
 
   const to = new Date();
   to.setDate(to.getDate() + 365);
@@ -78,6 +87,7 @@ export function buildDateRangeQuery() {
   return qs.toString();
 }
 
+// API 한 건을 "마감 임박/즐겨찾기" 테이블에서 쓰는 SoonItem 형태로 변환한다.
 export function toSoonItem(row: ApiRcvhome): SoonItem {
   const rcritPblancDe = toIsoDate(
     row["공고일"] ?? row["청약공고일"] ?? row["모집공고일"] ?? row.RCRIT_PBLANC_DE
@@ -94,6 +104,7 @@ export function toSoonItem(row: ApiRcvhome): SoonItem {
   };
 }
 
+// 전체 공고 데이터를 캘린더 컴포넌트에서 쓰는 이벤트 배열로 변환한다.
 export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
   const map = new Map<string, CalendarEvent>();
 
@@ -155,6 +166,7 @@ export function buildCalendarEvents(rows: ApiRcvhome[]): CalendarEvent[] {
   return Array.from(map.values());
 }
 
+// 대시보드 우측 "최근 업데이트" 카드 데이터 모델을 구성한다.
 export function buildUpdates(
   scheduleLast: ScheduleLastResponse,
   favoriteCount: number,
@@ -183,6 +195,7 @@ export function buildUpdates(
   ];
 }
 
+// 4개 API 결과를 대시보드 단일 화면 상태(DashboardState)로 합성한다.
 export function buildDashboardStateFromApi(
   allRows: ApiRcvhome[],
   deadlineRows: ApiRcvhome[],

@@ -1,3 +1,9 @@
+/*
+ * @file-overview
+ * 파일: src/pages\Login.css
+ * 설명: 해당 화면/컴포넌트 전용 스타일을 정의합니다.
+ */
+
 .login-wrapper {
   height: 100vh;
   display: flex;
