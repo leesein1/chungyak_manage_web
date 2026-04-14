@@ -1,14 +1,14 @@
-/*
+﻿/*
  * @file-overview
- * 파일: src/layouts\MainLayout.tsx
- * 설명: 앱 기능을 구성하는 모듈입니다.
+ * 파일: src/layouts/MainLayout.tsx
+ * 설명: 공통 레이아웃(사이드바/상단바/Outlet)을 구성합니다.
  */
 
 import { Outlet, useNavigate } from "react-router-dom";
-import { FaTachometerAlt, FaSearch, FaCog } from "react-icons/fa";
+import { FaTachometerAlt, FaSearch, FaClipboardList } from "react-icons/fa";
 import SideItem from "@/components/common/Sidebar";
 
-// AppLayout: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
+// AppLayout: 공통 프레임과 좌측 네비게이션을 렌더링한다.
 export default function AppLayout() {
   const navigate = useNavigate();
 
@@ -28,18 +28,12 @@ export default function AppLayout() {
         </button>
 
         <nav className="sidebar-nav">
-          <SideItem to="/dashboard" icon={<FaTachometerAlt />} label="메인 관제" end />
+          <SideItem to="/dashboard" icon={<FaTachometerAlt />} label="메인 관리" end />
           <SideItem to="/search" icon={<FaSearch />} label="조회" />
-          <SideItem to="/settings" icon={<FaCog />} label="설정" />
+          <SideItem to="/sch-log" icon={<FaClipboardList />} label="SCHLog" />
         </nav>
 
-        <div className="sidebar-footer">
-          {/*
-          <div className="small" style={{ color: "rgba(203,213,225,.7)" }}>
-            UI only · API는 추후 진행
-          </div>
-          */}
-        </div>
+        <div className="sidebar-footer" />
       </aside>
 
       <div className="main">
@@ -52,7 +46,7 @@ export default function AppLayout() {
   );
 }
 
-// Topbar: 이 파일에서 해당 기능 흐름을 처리하는 함수입니다.
+// Topbar: 상단 제목 클릭 시 대시보드 홈으로 이동시킨다.
 function Topbar({ onGoDashboard }: { onGoDashboard: () => void }) {
   return (
     <header className="topbar" style={{ marginBottom: 10 }}>

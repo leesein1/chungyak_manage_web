@@ -1,0 +1,393 @@
+﻿/*
+ * @file-overview
+ * 파일: src/pages/SCHLog.css
+ * 설명: SCHLog 화면 전용 스타일을 정의합니다.
+ */
+
+.logs-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.logs-hero {
+  padding: 14px 16px;
+}
+
+.logs-hero h2 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+  color: #1f2430;
+}
+
+.logs-hero-desc {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.logs-bar-row {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: minmax(220px, 520px) 50px auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.logs-input {
+  border: 1px solid #aeb6c4;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #182033;
+  height: 40px;
+}
+
+.logs-input:focus,
+.logs-select:focus,
+.logs-advanced-controls input[type="date"]:focus {
+  outline: none;
+  border-color: #4c6fff;
+  box-shadow: 0 0 0 3px rgba(76, 111, 255, 0.12);
+}
+
+.logs-btn {
+  border: 1px solid #aeb6c4;
+  border-radius: 10px;
+  background: #fff;
+  color: #111827;
+  height: 40px;
+  display: grid;
+  place-items: center;
+}
+
+.logs-toggle-btn {
+  height: 40px;
+  border: 1px solid #c8d5f2;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+  border-radius: 999px;
+  padding: 0 14px;
+  color: #1f3a8a;
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+}
+
+.logs-toggle-btn.is-open {
+  border-color: #4c6fff;
+  color: #2f4fd6;
+  background: linear-gradient(180deg, #eef3ff, #e4ecff);
+}
+
+.logs-advanced {
+  margin-top: 8px;
+  border: 1px solid #dbe2ed;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.logs-advanced-row {
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-top: 1px solid #e5e9f1;
+}
+
+.logs-advanced-row:first-of-type {
+  border-top: 0;
+}
+
+.logs-advanced-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #475569;
+}
+
+.logs-advanced-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.logs-advanced-controls input[type="date"] {
+  border: 1px solid #cfd7e5;
+  border-radius: 8px;
+  background: #fff;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.logs-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #334155;
+  font-weight: 700;
+}
+
+.logs-content {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logs-applied-wrap {
+  border: 1px solid #dbe2ed;
+  background: #f4f7fc;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.logs-applied-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2430;
+}
+
+.logs-chip-row {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.logs-chip {
+  background: #fff;
+  border: 1px solid #d8dfeb;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.logs-error {
+  margin-top: 8px;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.logs-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.logs-table-wrap {
+  max-height: 640px;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.logs-table-wrap::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.logs-table {
+  min-width: 1050px;
+}
+
+.logs-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+  border-top: 0;
+}
+
+.logs-message-cell {
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logs-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.logs-status.success {
+  color: #047857;
+  background: #d1fae5;
+  border: 1px solid #6ee7b7;
+}
+
+.logs-status.failed {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+}
+
+.logs-status.other {
+  color: #475569;
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+}
+
+.logs-right {
+  padding: 12px;
+}
+
+.logs-right h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.logs-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.logs-kpi-card {
+  border: 1px solid #dbe2ed;
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff;
+}
+
+.logs-kpi-wide {
+  grid-column: 1 / -1;
+}
+
+.logs-kpi-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.logs-kpi-value {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #1f2430;
+}
+
+.logs-side-section {
+  margin-top: 12px;
+}
+
+.logs-side-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.logs-side-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 270px;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.logs-side-list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.logs-side-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px;
+  background: #fff;
+}
+
+.logs-side-main {
+  font-size: 12px;
+  font-weight: 800;
+  color: #1f2430;
+}
+
+.logs-side-sub {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.logs-side-empty {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.logs-loadmore-wrap {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.logs-loadmore-btn {
+  border: 1px solid #c8d5f2;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+  color: #1f3a8a;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .logs-hero h2 {
+    font-size: 28px;
+  }
+
+  .logs-bar-row {
+    grid-template-columns: 1fr 44px;
+    grid-template-areas:
+      "input search"
+      "toggle toggle";
+  }
+
+  .logs-input {
+    grid-area: input;
+  }
+
+  .logs-btn {
+    grid-area: search;
+  }
+
+  .logs-toggle-btn {
+    grid-area: toggle;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .logs-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .logs-table {
+    min-width: 900px;
+  }
+}
