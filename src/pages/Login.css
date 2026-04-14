@@ -1,7 +1,7 @@
-/*
+﻿/*
  * @file-overview
- * 파일: src/pages\Login.css
- * 설명: 해당 화면/컴포넌트 전용 스타일을 정의합니다.
+ * ?뚯씪: src/pages\Login.css
+ * ?ㅻ챸: ?대떦 ?붾㈃/而댄룷?뚰듃 ?꾩슜 ?ㅽ??쇱쓣 ?뺤쓽?⑸땲??
  */
 
 .login-wrapper {
@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #7b5cff, #b084f7);
+  background: linear-gradient(135deg, #1f5f99, #5f95c0);
 }
 
 .login-card {
@@ -24,7 +24,7 @@
   text-align: center;
   margin: 0;
   font-weight: 800;
-  color: #4b2aad;
+  color: #174875;
 }
 
 .subtitle {
@@ -56,7 +56,7 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #7b5cff;
+  border-color: #1f5f99;
 }
 
 .login-btn {
@@ -64,7 +64,7 @@
   height: 44px;
   border-radius: 12px;
   border: none;
-  background: #7b5cff;
+  background: #1f5f99;
   color: white;
   font-weight: 700;
   cursor: pointer;
@@ -81,3 +81,4 @@
   font-size: 12px;
   color: #9ca3af;
 }
+

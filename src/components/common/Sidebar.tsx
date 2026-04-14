@@ -19,19 +19,21 @@ export default function SideItem({
   icon,
   label,
   end,
+  nested,
 }: {
   to: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   label: string;
   end?: boolean;
+  nested?: boolean;
 }) {
   return (
     <NavLink
       to={to}
       end={end}
-      className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
+      className={({ isActive }) => `nav-item${nested ? " nested" : ""}${isActive ? " active" : ""}`}
     >
-      <span className="nav-icon">{icon}</span>
+      {icon ? <span className="nav-icon">{icon}</span> : null}
       <span className="nav-label">{label}</span>
     </NavLink>
   );

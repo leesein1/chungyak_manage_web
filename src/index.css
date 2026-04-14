@@ -10,8 +10,9 @@ html, body, #root {
 
 body {
   margin: 0;
-  background: #f4f5fa;
-  color: #1f2937;
+  background: #f1f6fb;
+  color: #17324d;
+  font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 
 a { text-decoration: none; }
