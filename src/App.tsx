@@ -11,6 +11,7 @@ import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Search from "./pages/Search";
 import SCHLog from "./pages/SCHLog";
+import ALMLog from "./pages/ALMLog";
 import NotFound from "./pages/NotFound";
 
 // App: 라우트 진입 규칙(로그인 우회, SCHLog 메뉴 포함)을 정의한다.
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/search" element={<Search />} />
           <Route path="/sch-log" element={<SCHLog />} />
+          <Route path="/alarm-log" element={<ALMLog />} />
           {/* 기존 logs/settings 진입은 SCHLog로 이관 */}
           <Route path="/logs" element={<Navigate to="/sch-log" replace />} />
           <Route path="/settings" element={<Navigate to="/sch-log" replace />} />

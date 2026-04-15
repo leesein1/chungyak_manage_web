@@ -4,7 +4,7 @@
  * 설명: 공통 레이아웃(사이드바/상단바/Outlet)을 구성합니다.
  */
 
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FaTachometerAlt, FaSearch, FaClipboardList, FaBars, FaChevronDown } from "react-icons/fa";
 import SideItem from "@/components/common/Sidebar";
@@ -12,11 +12,8 @@ import SideItem from "@/components/common/Sidebar";
 // AppLayout: 공통 프레임과 좌측 네비게이션을 렌더링한다.
 export default function AppLayout() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [logMenuOpen, setLogMenuOpen] = useState(true);
-
-  const isLogRoute = location.pathname.startsWith("/sch-log");
+  const [logMenuOpen, setLogMenuOpen] = useState(false);
 
   useEffect(() => {
     const onResize = () => {
@@ -25,10 +22,6 @@ export default function AppLayout() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
-
-  useEffect(() => {
-    if (isLogRoute) setLogMenuOpen(true);
-  }, [isLogRoute]);
 
   return (
     <div className={`app-shell ${mobileNavOpen ? "nav-open" : ""}`}>
@@ -70,6 +63,7 @@ export default function AppLayout() {
             </button>
             <div id="nav-log-submenu" className={`nav-submenu ${logMenuOpen ? "open" : ""}`}>
               <SideItem to="/sch-log" label="스케줄 로그" nested />
+              <SideItem to="/alarm-log" label="조회 로그" nested />
             </div>
           </div>
         </nav>
