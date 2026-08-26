@@ -38,32 +38,37 @@
 
 ## 📸 Preview
 
-### Dashboard
+<details>
+<summary><b>Dashboard 보기</b> — 공고 현황 · 일정 · 마감 임박 · 지도 · 최근 동기화 상태</summary>
+<br/>
 <p align="center">
-  <img src="docs/webp/dashboard.webp" width="900" alt="Chungyak Manager Dashboard" />
+  <img src="docs/webp/dashboard.webp" width="820" alt="Chungyak Manager Dashboard" />
 </p>
-<p align="center"><sub>공고 현황 · 일정 · 마감 임박 · 지도 · 최근 동기화 상태</sub></p>
+</details>
 
-### Search & Detail
+<details>
+<summary><b>Search & Detail 보기</b> — 공고 검색 · 상세 조건 · 즐겨찾기 · 위치 지도</summary>
+<br/>
 <p align="center">
-  <img src="docs/webp/search.webp" width="900" alt="Chungyak Manager Search and Detail" />
+  <img src="docs/webp/search.webp" width="820" alt="Chungyak Manager Search and Detail" />
 </p>
-<p align="center"><sub>공고 검색 · 상세 조건 · 상세 조회 · 즐겨찾기 · 위치 지도</sub></p>
+</details>
 
-<table>
-<tr>
-<td width="70%" align="center" valign="top">
-<b>Schedule Log</b><br/><br/>
-<img src="docs/webp/log.webp" width="650" alt="Chungyak Manager Schedule Log" /><br/>
-<sub>1시간 주기 수집 및 마감 작업의 실행 결과 확인</sub>
-</td>
-<td width="30%" align="center" valign="top">
-<b>Slack Notification</b><br/><br/>
-<img src="docs/webp/slack.webp" width="260" alt="Chungyak Manager Slack Notification" /><br/>
-<sub>신규 모집공고 자동 알림</sub>
-</td>
-</tr>
-</table>
+<details>
+<summary><b>Schedule Log 보기</b> — 1시간 주기 수집 및 마감 작업 실행 결과</summary>
+<br/>
+<p align="center">
+  <img src="docs/webp/log.webp" width="820" alt="Chungyak Manager Schedule Log" />
+</p>
+</details>
+
+<details>
+<summary><b>Slack Notification 보기</b> — 신규 모집공고 자동 알림</summary>
+<br/>
+<p align="center">
+  <img src="docs/webp/slack.webp" width="360" alt="Chungyak Manager Slack Notification" />
+</p>
+</details>
 
 ### Demo
 
