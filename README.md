@@ -5,7 +5,7 @@
 
 <p align="center">
   <a href="https://ourchungyak.silee.net/">
-    <img src="https://img.shields.io/badge/Live%20Demo-청약알리미%20바로가기-0F172A?style=for-the-badge&logo=vercel&logoColor=white" alt="청약알리미 바로가기" />
+    <img src="https://img.shields.io/badge/청약알리미%20바로가기-0F172A?style=for-the-badge&logo=vercel&logoColor=white" alt="청약알리미 바로가기" />
   </a>
 </p>
 
