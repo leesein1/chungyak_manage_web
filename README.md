@@ -3,6 +3,12 @@
 > **바쁜 하루 속에서도, 중요한 청약 정보만큼은 놓치고 싶지 않았다.**  
 > 결혼을 준비하며 직접 집과 청약 정보를 관리하던 경험에서 시작한 개인 프로젝트입니다.
 
+<p align="center">
+  <a href="https://ourchungyak.silee.net/dashboard">
+    <img src="https://img.shields.io/badge/Live%20Demo-청약알리미%20바로가기-0F172A?style=for-the-badge&logo=vercel&logoColor=white" alt="청약알리미 바로가기" />
+  </a>
+</p>
+
 ---
 
 ## 💛 왜 만들었을까?
